@@ -1,71 +1,76 @@
 
 #include "ft_ls.h"
+#include "stdio.h"
 
-static l_file	*add_chmod(l_file *files, struct dirent *dir)
+static l_file	*add_chmod(l_file *files, char *d_name)//struct dirent *dir)
 {
-	char		*s;
-	char		*chmod;
-	struct stat fileStat;
-	int 		i;
+	unsigned int	s;
+	char			*chmod;
+	struct stat 	fileStat;
+	int 			i;
 
-	i = 1;
-	stat(dir->d_name, &fileStat);
-	chmod = (char *)malloc(sizeof(char));
+	stat(d_name, &fileStat);
+	chmod = "";
 	if (S_ISREG(fileStat.st_mode))
 		chmod = ft_strjoin(chmod, "-");
 	if (S_ISDIR(fileStat.st_mode))
 		chmod = ft_strjoin(chmod, "d");
 	if (S_ISLNK(fileStat.st_mode))
 		chmod = ft_strjoin(chmod, "x");
-	s = ft_itoa_base(fileStat.st_mode, 8, 'a');
-	while (i++ < 4)
+	s = ft_atoi(ft_itoa_base(fileStat.st_mode, 8, 'a')) % 1000;
+	i = 100;
+	while (i != 0)
 	{
-		if (s[i] == '0')
+		if (s / i % 10 == 0)
 			chmod = ft_strjoin(chmod, "---");
-		if (s[i] == '1')
+		if (s / i % 10 == 1)
 			chmod = ft_strjoin(chmod, "--x");
-		if (s[i] == '2')
+		if (s / i % 10 == 2)
 			chmod = ft_strjoin(chmod, "-w-");
-		if (s[i] == '3')
+		if (s / i % 10 == 3)
 			chmod = ft_strjoin(chmod, "-wx");
-		if (s[i] == '4')
+		if (s / i % 10 == 4)
 			chmod = ft_strjoin(chmod, "r--");
-		if (s[i] == '5')
+		if (s / i % 10 == 5)
 			chmod = ft_strjoin(chmod, "r-x");
-		if (s[i] == '6')
+		if (s / i % 10 == 6)
 			chmod = ft_strjoin(chmod, "rw-");
-		if (s[i] == '7')
+		if (s / i % 10 == 7)
 			chmod = ft_strjoin(chmod, "rwx");
+		i /= 10;
 	}
+	chmod[10] = 0;
 	files->chmod = chmod;
 	return (files);
 }
 
-static l_file	*add_time(l_file *files, struct dirent *dir)
+static l_file	*add_time(l_file *files, char *d_name)//struct dirent *dir)
 {
 	struct	stat fileStat;
 	char	**words;
 
-	stat(dir->d_name, &fileStat);
+	stat(d_name, &fileStat);
 	words = ft_strsplit(ctime(&fileStat.st_mtimespec.tv_sec), ' ');
 	files->month = words[1];
 	files->day = words[2];
 	files->time = words[3];
 	files->year = words[4];
+	ft_strdel(&d_name);
 	return (files);
 }
 
-static l_file	*add_stat(l_file *files, struct dirent *dir)
+static l_file	*add_stat(l_file *files, char *d_name)
 {
 	struct stat		fileStat;
 	struct passwd	*pwd;
 
-	stat(dir->d_name, &fileStat);
+	stat(d_name, &fileStat);
 	pwd = getpwuid(fileStat.st_uid);
 	files->user_name = pwd->pw_name;
 	files->nlink = fileStat.st_nlink;
 	files->file_size = fileStat.st_size;
 	files->st_blocks = fileStat.st_blocks;
+	ft_strdel(&d_name);
 	return(files);
 }
 
@@ -95,7 +100,7 @@ static l_file	*add_total(l_file *files)
 	return (files);
 }
 
-l_file			*complete_list(l_file *files)
+l_file			*complete_list(l_file *files, char *file_name)
 {
 	DIR		*ptr;  //указатель на поток
 	struct	dirent *dir;
@@ -103,15 +108,16 @@ l_file			*complete_list(l_file *files)
 	l_file	*new_elem;
 
 	start_list = files;
-	ptr = opendir(".");
+	ptr = opendir(file_name);
 	dir = readdir(ptr);
+	file_name = ft_strjoin(file_name, "/");
 	while (dir)
 	{
 		clear_list(files);
 		files->file_name = dir->d_name;
-		add_chmod(files, dir);
-		add_time(files, dir);
-		add_stat(files, dir);
+		add_chmod(files, ft_strjoin(file_name, dir->d_name));
+		add_time(files, ft_strjoin(file_name, dir->d_name));
+		add_stat(files, ft_strjoin(file_name, dir->d_name));
 		new_elem = (l_file *)malloc(sizeof(l_file) * 1);
 		files->next = new_elem;
 		files = files->next;

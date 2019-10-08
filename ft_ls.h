@@ -43,10 +43,11 @@ typedef struct	l_file
 
 
 char		*ft_itoa_base(long long int nbr, int base, char reg);	// для разрешений (chmod)
-l_file		*complete_list(l_file *files);
+l_file			*complete_list(l_file *files, char *file_name);
 void		clear_list(l_file *files);
 l_file		**sort_by_ascii(l_file **struct_array);		// сортирует файлы и каталоги по ASCII
-l_file		*sort_by_time(l_file *files);		// сортирует файлы и каталоги по времени их создания
+void	print_ls(l_file **struct_array, char *dir_name);
+l_file		**sort_by_time(l_file **struct_array);
 
 
 #endif

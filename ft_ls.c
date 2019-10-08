@@ -57,28 +57,31 @@ void	check_flags(int argc, char **argv)
 	}
 }
 
-
-
-void	print_ls_l(l_file *files)
-{
-
-}
-
-//l_file	reverse_list(l_file *files)
+//void	check_flags(int argc, char **argv)
 //{
+//	int i;
+//	int j;
 //
-//}
-
-//void	print_ls(l_file *files)
-//{
-//	l_file *start;
-//
-//	sort_by_ascii(files);
-//	start = files;
-////	if (g_flags_ls->r)
-////		reverse_list(files);
-////	if (g_flags_ls->l)
-////		files;
+//	i = 1;
+//	while (i < argc && argv[i][j] == '-')
+//	{
+//		j = 0;
+//		while (argv[i][j])
+//		{
+//			if (argv[i][j] == 'l')
+//				g_flags_ls->l = 1;
+//			else if (argv[i][j] == 'R')
+//				g_flags_ls->R = 1;
+//			else if (argv[i][j] == 'a')
+//				g_flags_ls->a = 1;
+//			else if (argv[i][j] == 'r')
+//				g_flags_ls->r = 1;
+//			else if (argv[i][j] == 't')
+//				g_flags_ls->t = 1;
+//			j++;
+//		}
+//		i++;
+//	}
 //}
 
 l_file 	**make_array(l_file *files)
@@ -94,7 +97,7 @@ l_file 	**make_array(l_file *files)
 		i++;
 		files = files->next;
 	}
-	struct_array = (l_file **)malloc(sizeof(l_file) * (i + 1));
+	struct_array = (l_file **)malloc(sizeof(l_file) * i);
 	i = 0;
 	files = start;
 	while (files)
@@ -104,34 +107,79 @@ l_file 	**make_array(l_file *files)
 		files = files->next;
 		i++;
 	}
-	struct_array[i] = NULL;
+	struct_array[i - 1] = NULL;
 	return (struct_array);
 }
 
+void	ft_ls(char *file_name)
+{
+	l_file *files;
+	l_file **struct_array;
+	int i;
+	char *ptr;
+	char *temp;
+
+	i = -1;
+	files = (l_file *)malloc(sizeof(l_file) * 1);
+	complete_list(files, file_name);
+	struct_array = make_array(files);
+	sort_by_ascii(struct_array);
+	print_ls(struct_array, file_name);
+	while (struct_array[++i] && g_flags_ls->R)
+	{
+		if (struct_array[i]->chmod[0] =='d' && !(ft_strequ(struct_array[i]->file_name,".") ||
+			ft_strequ(struct_array[i]->file_name,"..")))
+		{
+			ptr = ft_strjoin(file_name, "/");
+			temp = ptr;
+			ptr = ft_strjoin(ptr, struct_array[i]->file_name);
+			ft_ls(ptr);
+			ft_strdel(&ptr);
+			ft_strdel(&temp);
+		}
+	}
+	free(files);
+}
 
 int 	main(int argc, char **argv)
 {
-	l_file **struct_array;
-	l_file *files;
-
 	g_flags_ls = (l_flags *)malloc(sizeof(l_flags) * 1);
-	files = (l_file *)malloc(sizeof(l_file) * 1);
 	clear_flags();
 	check_flags(argc, argv);
-	complete_list(files);
-	struct_array = make_array(files);
-	sort_by_ascii(struct_array);
+
+	ft_ls(".");
+	return (0);
+}
+
+//	clear_flags();
+//	complete_list(files);
+//	struct_array = make_array(files);
+//	sort_by_ascii(struct_array);
+//	print_ls(struct_array)
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 //	print_ls(files);
 
-	write(1, "Check Flags\n", 12);
+//	write(1, "Check Flags\n", 12);
 //	write(1, files->chmod, 12);
 //	ft_putnbr(files->nlink);
 //	write(1, files->user_name, 8);
 //	write(1, files->year, 4);
 //	ft_putnbr(files->file_size);
-	ft_putnbr(struct_array[0]->total);
+//	ft_putnbr(struct_array[0]->total);
 //	write(1, files->month, 3);
 //	write(1, files->day, 2);
 //	write(1, files->time, 8);
@@ -213,5 +261,3 @@ int 	main(int argc, char **argv)
 //	count = listxattr("..", &list, 10000, XATTR_SHOWCOMPRESSION);
 //	printf("\n%zu", count);
 
-	return (0);
-}
