@@ -75,7 +75,7 @@ static l_file	*add_chmod(l_file *files, char *d_name)
 	else if (S_ISDIR(file_stat.st_mode))
 		chmod = ft_strcat(chmod, "d");
 	else if (S_ISLNK(file_stat.st_mode))
-		chmod = ft_strcat(chmod, "x");
+		chmod = ft_strcat(chmod, "l");
 	fill_chmod(file_stat.st_mode, chmod);
 	files->chmod = chmod;
 	return (files);
@@ -129,30 +129,37 @@ static l_file	*add_params(l_file *files, char **d_name, struct dirent	*dir)
 **	files: address of file (d_name) structure
 */
 
-static l_file	*add_total(l_file *start_file_list)
+static void		add_total(l_file *start_list)
 {
 	int		total;
 	l_file	*start;
 
-	start = start_file_list;
+	start = start_list;
 	total = 0;
-	while (start_file_list->next)
+	while (start_list->next)
 	{
-		if (!(g_flags_ls->a) && start_file_list->file_name[0] == '.')
+		if (!(g_flags_ls->a) && !(g_flags_ls->A) && start_list->file_name[0] == '.')
 		{
-			start_file_list = start_file_list->next;
+			start_list = start_list->next;
 			continue ;
 		}
-		total = total + start_file_list->st_blocks;
-		start_file_list = start_file_list->next;
+		if ((g_flags_ls->A) && start_list->chmod[0] == 'd' &&
+		(ft_strequ(start_list->file_name, ".") ||
+		ft_strequ(start_list->file_name, "..")))
+		{
+			start_list = start_list->next;
+			continue ;
+		}
+		total = total + start_list->st_blocks;
+		start_list = start_list->next;
 	}
-	start_file_list = start;
-	while (start_file_list->next)
+	start_list = start;
+	while (start_list->next)
 	{
-		start_file_list->total = total;
-		start_file_list = start_file_list->next;
+		start_list->total = total;
+		start_list = start_list->next;
 	}
-	return (start_file_list);
+	return (start_list);
 }
 
 l_file			*complete_list(l_file *files, char *file_name)
