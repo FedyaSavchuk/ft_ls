@@ -21,6 +21,7 @@ typedef struct	p_flags
 				int R;							// рекурсивный просмотр всех файлов и каталогов в директории
 				int r;							// вывод в обратном порядке
 				int t;							// сортировка по времени
+				int g;							// работает как -l, только не выводит создателя
 }				l_flags;
 
 l_flags *g_flags_ls;
@@ -36,6 +37,7 @@ typedef struct	l_file
 				char 			*month;			// fileStat.st_mtimespec.tv_sec
 				char			*day;			// fileStat.st_mtimespec.tv_sec
 				char			*time;			// fileStat.st_mtimespec.tv_sec
+				unsigned long	unix_time;		// время в формате юникод
 				char			*file_name;		// dir -> d_name
 				int 			st_blocks;
 				struct l_file 	*next;

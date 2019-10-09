@@ -3,4 +3,4 @@
 *.output
 *.out
 .idea*
-
+[cC][mM]*

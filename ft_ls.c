@@ -51,6 +51,8 @@ void	check_flags(int argc, char **argv)
 					g_flags_ls->r = 1;
 				else if (argv[i][j] == 't')
 					g_flags_ls->t = 1;
+				else if (argv[i][j] == 'g')
+					g_flags_ls->g = 1;
 				j++;
 			}
 		}
@@ -125,6 +127,8 @@ void	ft_ls(char *file_name)
 	complete_list(files, file_name);
 	struct_array = make_array(files);
 	sort_by_ascii(struct_array);
+	if (g_flags_ls->t)
+		sort_by_time(struct_array);
 	print_ls(struct_array, file_name);
 	while (struct_array[++i] && g_flags_ls->R)
 	{

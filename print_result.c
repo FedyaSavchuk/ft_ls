@@ -20,6 +20,7 @@ static int	max_len(l_file **struct_array, char column)
 	int 	len;
 
 	max_len = 0;
+	len = 0;
 	i = 0;
 	while (struct_array[i])
 	{
@@ -27,6 +28,8 @@ static int	max_len(l_file **struct_array, char column)
 			len = int_len(struct_array[i]->nlink);
 		if (column == 'f')
 			len = int_len(struct_array[i]->file_size);
+		if (column == 'u')
+			len = ft_strlen(struct_array[i]->user_name);
 		if (max_len < len)
 			max_len = len;
 		i++;
@@ -37,12 +40,14 @@ static int	max_len(l_file **struct_array, char column)
 void	print_ls(l_file **struct_array, char *dir_name)
 {
 	int i;
-	int n_link;
-	int	size;
+	int link_len;
+	int	size_len;
+	int user_len;
 
 	i = -1;
-	n_link = max_len(struct_array, 'l');
-	size = max_len(struct_array, 'f');
+	link_len = max_len(struct_array, 'l');
+	size_len = max_len(struct_array, 'f');
+	user_len = max_len(struct_array, 'u');
 	if (g_flags_ls->R && !ft_strequ(dir_name, "."))
 		printf("\n%s:\n", dir_name);
 	if (g_flags_ls->l)
@@ -51,13 +56,14 @@ void	print_ls(l_file **struct_array, char *dir_name)
 	{
 		if (!g_flags_ls->a && struct_array[i]->file_name[0] == '.')
 			continue ;
-		if (g_flags_ls->l)
+		if (g_flags_ls->l || g_flags_ls->g)
 		{
 			printf("%-12s", struct_array[i]->chmod);
-			printf("%*d", n_link, struct_array[i]->nlink);
-			printf(" %s  ", struct_array[i]->user_name);
+			printf("%*d ", link_len, struct_array[i]->nlink);
+			if (!(g_flags_ls->g))
+				printf("%*s  ", user_len, struct_array[i]->user_name);
 			printf("%.4s  ", struct_array[i]->year);
-			printf("%*d ", size, struct_array[i]->file_size);
+			printf("%*d ", size_len, struct_array[i]->file_size);
 			printf("%s", struct_array[i]->month);
 			printf("%3s ", struct_array[i]->day);
 			printf("%.5s ", struct_array[i]->time);
