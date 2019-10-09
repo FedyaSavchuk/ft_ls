@@ -4,3 +4,4 @@
 *.out
 .idea*
 [cC][mM]*
+*.dSYM

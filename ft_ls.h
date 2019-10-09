@@ -38,6 +38,7 @@ typedef struct	l_file
 				int				nlink;			// fileStat.st_nlink
 				char			*user_name;		// pwd->pw_name
 				char 			*group;
+				char 			*date;
 				char			*year;			// fileStat.st_mtimespec.tv_sec
 				int 			file_size;		// fileStat.st_size
 				char 			*month;			// fileStat.st_mtimespec.tv_sec
@@ -62,7 +63,8 @@ void		print_ls(l_file **struct_array, char *dir_name);
 l_file		**sort_by_time(l_file **struct_array);
 l_file		**sort_by_size(l_file **struct_array);
 char		*ft_strjoin_safe(char *str1, const char *str2);
-
+void		free_3ptr(DIR **ptr, struct dirent **dir, char **c);
+char		*ft_strndup(const char *str, int n);
 
 #endif
 

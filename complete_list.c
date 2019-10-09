@@ -102,17 +102,17 @@ static l_file	*add_params_f(l_file *files, char **d_name, struct dirent *dir)
 	struct stat		file_stat;
 	struct passwd	*pwd;
 	char			**words;
+	char			*date;
+	//Sun Oct  8 10:10:10 2019
 
 	stat(*d_name, &file_stat);
 	files->file_name = dir->d_name;
 	add_chmod(files, *d_name);
 	files->unix_time = file_stat.st_mtimespec.tv_sec;
-	words = ft_strsplit(ctime(&files->unix_time), ' ');
-	files->month = words[1];
-	files->day = words[2];
+	date = ctime(&files->unix_time);
+	files->date = ft_strndup(&date[4], 7);
 	files->time = (long int)difftime(time(NULL), files->unix_time) <= HALF_YEAR
-			? words[3] : words[4];
-	words[4][4] = 0;
+			? ft_strndup(&date[11], 5) : ft_strndup(&date[20], 4);
 	files->user_name = getpwuid(file_stat.st_uid)->pw_name;
 	files->nlink = file_stat.st_nlink;
 	files->file_size = file_stat.st_size;
@@ -128,7 +128,7 @@ static l_file	*add_params_f(l_file *files, char **d_name, struct dirent *dir)
 ** 	summary: count sum of memory blocks for all file (if -a flag used)
 **	and only for visible files (if there is no -a flag)
 **
-**	files: address of file (d_name) structure
+**	start_list: start address of file list (d_name) structures
 */
 
 static void		add_total(l_file *start_list)
@@ -160,6 +160,16 @@ static void		add_total(l_file *start_list)
 	g_ls_vars.total_blocks = total;
 }
 
+/*
+** complete_list
+** --------------
+** 	summary: fills the list of files structures with data from stat structures
+**	in current dir (file_name)
+**
+**	files: start address of file list (d_name) structures
+**	file_name: name of directory that will be opened
+*/
+
 l_file			*complete_list(l_file *files, char *file_name)
 {
 	DIR				*ptr;
@@ -185,5 +195,6 @@ l_file			*complete_list(l_file *files, char *file_name)
 	}
 	files->next = NULL;
 	add_total(start_list);
+	free_3ptr(&ptr, &dir, &file_name);
 	return (start_list);
 }

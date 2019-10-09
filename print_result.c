@@ -77,8 +77,8 @@ void	print_ls(l_file **struct_array, char *dir_name)
 				printf("%*s  ", user_len, struct_array[i]->user_name);
 			printf("%.*s  ", max_len(struct_array, 'g'), struct_array[i]->group);
 			printf("%*d ", size_len, struct_array[i]->file_size);
-			printf("%s", struct_array[i]->month);
-			printf("%3s ", struct_array[i]->day);
+			printf("%s", struct_array[i]->date);
+			//printf("%3s ", struct_array[i]->day);
 			printf("%5.5s ", struct_array[i]->time);
 		}
 		if (g_flags_ls->m && struct_array[i + 1])
