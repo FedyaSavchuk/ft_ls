@@ -37,6 +37,7 @@ typedef struct	l_file
 				char			*chmod;			// fileStat.st_mode
 				int				nlink;			// fileStat.st_nlink
 				char			*user_name;		// pwd->pw_name
+				char 			*group;
 				char			*year;			// fileStat.st_mtimespec.tv_sec
 				int 			file_size;		// fileStat.st_size
 				char 			*month;			// fileStat.st_mtimespec.tv_sec
@@ -48,13 +49,19 @@ typedef struct	l_file
 				struct l_file 	*next;
 }				l_file;
 
+struct s_ls_vars
+{
+				unsigned int	total_blocks;
+} g_ls_vars;
 
 char		*ft_itoa_base(long long int nbr, int base, char reg);	// для разрешений (chmod)
-l_file			*complete_list(l_file *files, char *file_name);
+l_file		*complete_list(l_file *files, char *file_name);
 void		clear_list(l_file *files);
 l_file		**sort_by_ascii(l_file **struct_array);		// сортирует файлы и каталоги по ASCII
-void	print_ls(l_file **struct_array, char *dir_name);
+void		print_ls(l_file **struct_array, char *dir_name);
 l_file		**sort_by_time(l_file **struct_array);
+l_file		**sort_by_size(l_file **struct_array);
+char		*ft_strjoin_safe(char *str1, const char *str2);
 
 
 #endif

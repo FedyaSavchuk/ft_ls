@@ -90,12 +90,10 @@ void	ft_ls(char *file_name)
 		if (struct_array[i]->chmod[0] =='d' && !(ft_strequ(struct_array[i]->file_name,".") ||
 			ft_strequ(struct_array[i]->file_name,"..")))
 		{
-			ptr = ft_strjoin(file_name, "/");
-			temp = ptr;
-			ptr = ft_strjoin(ptr, struct_array[i]->file_name);
+			ptr = ft_strjoin_safe(file_name, "/");
+			ptr = ft_strjoin_safe(ptr, struct_array[i]->file_name);
 			ft_ls(ptr);
 			ft_strdel(&ptr);
-			ft_strdel(&temp);
 		}
 	}
 	free(files);

@@ -37,7 +37,7 @@ l_file		**sort_by_ascii(l_file **struct_array)
 	return (struct_array);
 }
 
-l_file		**sort_by_time(l_file **struct_array, int reverse)
+l_file		**sort_by_time(l_file **struct_array)
 {
 	int		i;
 	int		j;
@@ -61,7 +61,7 @@ l_file		**sort_by_time(l_file **struct_array, int reverse)
 	return (struct_array);
 }
 
-l_file		**sort_by_size(l_file **struct_array, int reverse)
+l_file		**sort_by_size(l_file **struct_array)
 {
 	int		i;
 	int		j;

@@ -12,6 +12,7 @@
 
 #include "ft_ls.h"
 #include "stdio.h"
+#define HALF_YEAR 2629743 * 6
 
 /*
 ** fill_chmod
@@ -96,7 +97,7 @@ static l_file	*add_chmod(l_file *files, char *d_name)
 **	d_name: name of file or directory
 */
 
-static l_file	*add_params(l_file *files, char **d_name, struct dirent	*dir)
+static l_file	*add_params_f(l_file *files, char **d_name, struct dirent *dir)
 {
 	struct stat		file_stat;
 	struct passwd	*pwd;
@@ -109,13 +110,14 @@ static l_file	*add_params(l_file *files, char **d_name, struct dirent	*dir)
 	words = ft_strsplit(ctime(&files->unix_time), ' ');
 	files->month = words[1];
 	files->day = words[2];
-	files->time = words[3];
-	files->year = words[4];
-	pwd = getpwuid(file_stat.st_uid);
-	files->user_name = pwd->pw_name;
+	files->time = (long int)difftime(time(NULL), files->unix_time) <= HALF_YEAR
+			? words[3] : words[4];
+	words[4][4] = 0;
+	files->user_name = getpwuid(file_stat.st_uid)->pw_name;
 	files->nlink = file_stat.st_nlink;
 	files->file_size = file_stat.st_size;
 	files->st_blocks = file_stat.st_blocks;
+	files->group = getgrgid(file_stat.st_gid)->gr_name;
 	ft_strdel(d_name);
 	return (files);
 }
@@ -138,14 +140,15 @@ static void		add_total(l_file *start_list)
 	total = 0;
 	while (start_list->next)
 	{
-		if (!(g_flags_ls->a) && !(g_flags_ls->A) && start_list->file_name[0] == '.')
+		if (!(g_flags_ls->a) && !(g_flags_ls->A)
+			&& start_list->file_name[0] == '.')
 		{
 			start_list = start_list->next;
 			continue ;
 		}
 		if ((g_flags_ls->A) && start_list->chmod[0] == 'd' &&
 			(ft_strequ(start_list->file_name, ".") ||
-			 ft_strequ(start_list->file_name, "..")))
+			ft_strequ(start_list->file_name, "..")))
 		{
 			start_list = start_list->next;
 			continue ;
@@ -154,11 +157,7 @@ static void		add_total(l_file *start_list)
 		start_list = start_list->next;
 	}
 	start_list = start;
-	while (start_list->next)
-	{
-		start_list->total = total;
-		start_list = start_list->next;
-	}
+	g_ls_vars.total_blocks = total;
 }
 
 l_file			*complete_list(l_file *files, char *file_name)
@@ -177,7 +176,7 @@ l_file			*complete_list(l_file *files, char *file_name)
 	{
 		temp = ft_strjoin(file_name, dir->d_name);
 		ft_bzero(files, sizeof(l_file));
-		add_params(files, &temp, dir);
+		add_params_f(files, &temp, dir);
 		new_elem = (l_file *)malloc(sizeof(l_file));
 		files->next = new_elem;
 		files = files->next;
