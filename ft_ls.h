@@ -37,7 +37,7 @@ typedef struct	l_file
 				char 			*month;			// fileStat.st_mtimespec.tv_sec
 				char			*day;			// fileStat.st_mtimespec.tv_sec
 				char			*time;			// fileStat.st_mtimespec.tv_sec
-				unsigned long	unix_time;		// время в формате юникод
+				long			unix_time;		// время в формате юникод
 				char			*file_name;		// dir -> d_name
 				int 			st_blocks;
 				struct l_file 	*next;
