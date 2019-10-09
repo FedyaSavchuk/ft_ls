@@ -1,93 +1,45 @@
 #include "ft_ls.h"
 #define MAX_LEN 256
 
-void	clear_flags()
-{
-	g_flags_ls->l = 0;
-	g_flags_ls->a = 0;
-	g_flags_ls->R = 0;
-	g_flags_ls->r = 0;
-	g_flags_ls->t = 0;
-}
-
-void		clear_list(l_file *files)
-{
-	files->total = 0;
-	files->chmod = NULL;
-	files->nlink = 0;
-	files->user_name = NULL;
-	files->year = NULL;
-	files->file_size = 0;
-	files->month = NULL;
-	files->day = NULL;
-	files->time = NULL;
-	files->file_name = NULL;
-	files->next = NULL;
-	files->st_blocks = 0;
-}
-
-void	check_flags(int argc, char **argv)
+static void	check_flags(int argc, char **argv)
 {
 	int i;
 	int j;
 
 	i = 1;
-	while (i < argc)
+	j = 0;
+	while (i < argc && argv[i][j] == '-')
 	{
 		j = 0;
-		if (argv[i][j] != '-')
-			return ;
-		else if (argv[i][j] == '-')
+		while (argv[i][j])
 		{
-			while (argv[i][j])
-			{
-				if (argv[i][j] == 'l')
-					g_flags_ls->l = 1;
-				else if (argv[i][j] == 'R')
-					g_flags_ls->R = 1;
-				else if (argv[i][j] == 'a')
-					g_flags_ls->a = 1;
-				else if (argv[i][j] == 'r')
-					g_flags_ls->r = 1;
-				else if (argv[i][j] == 't')
-					g_flags_ls->t = 1;
-				else if (argv[i][j] == 'g')
-					g_flags_ls->g = 1;
-				j++;
-			}
+			if (argv[i][j] == 'l')
+				g_flags_ls->l = 1;
+			else if (argv[i][j] == 'R')
+				g_flags_ls->R = 1;
+			else if (argv[i][j] == 'a')
+				g_flags_ls->a = 1;
+			else if (argv[i][j] == 'r')
+				g_flags_ls->r = 1;
+			else if (argv[i][j] == 't')
+				g_flags_ls->t = 1;
+			else if (argv[i][j] == 'g')
+				g_flags_ls->g = 1;
+			else if (argv[i][j] == 'A')
+				g_flags_ls->A = 1;
+			else if (argv[i][j] == 'S')
+				g_flags_ls->S = 1;
+			else if (argv[i][j] == 'f')
+				g_flags_ls->f = 1;
+			else if (argv[i][j] == 'm')
+				g_flags_ls->m = 1;
+			j++;
 		}
 		i++;
 	}
 }
 
-//void	check_flags(int argc, char **argv)
-//{
-//	int i;
-//	int j;
-//
-//	i = 1;
-//	while (i < argc && argv[i][j] == '-')
-//	{
-//		j = 0;
-//		while (argv[i][j])
-//		{
-//			if (argv[i][j] == 'l')
-//				g_flags_ls->l = 1;
-//			else if (argv[i][j] == 'R')
-//				g_flags_ls->R = 1;
-//			else if (argv[i][j] == 'a')
-//				g_flags_ls->a = 1;
-//			else if (argv[i][j] == 'r')
-//				g_flags_ls->r = 1;
-//			else if (argv[i][j] == 't')
-//				g_flags_ls->t = 1;
-//			j++;
-//		}
-//		i++;
-//	}
-//}
-
-l_file 	**make_array(l_file *files)
+static l_file 	**make_array(l_file *files)
 {
 	l_file **struct_array;
 	l_file *start;
@@ -126,8 +78,9 @@ void	ft_ls(char *file_name)
 	files = (l_file *)malloc(sizeof(l_file) * 1);
 	complete_list(files, file_name);
 	struct_array = make_array(files);
-	sort_by_ascii(struct_array);
-	if (g_flags_ls->t)
+	if (!g_flags_ls->f)
+		sort_by_ascii(struct_array);
+	if (g_flags_ls->t && !g_flags_ls->f)
 		sort_by_time(struct_array);
 	print_ls(struct_array, file_name);
 	while (struct_array[++i] && g_flags_ls->R)
@@ -155,7 +108,7 @@ int 	main(int argc, char **argv)
 	i = 0;
 	j = 0;
 	g_flags_ls = (l_flags *)malloc(sizeof(l_flags) * 1);
-	clear_flags();
+	ft_bzero(g_flags_ls, sizeof(l_flags));
 	check_flags(argc, argv);
 	while (++i < argc)
 		if (argv[i][0] != '-')

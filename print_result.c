@@ -54,9 +54,13 @@ void	print_ls(l_file **struct_array, char *dir_name)
 		printf("total %d\n", struct_array[i + 1]->total);
 	while (struct_array[++i])
 	{
-		if (!g_flags_ls->a && struct_array[i]->file_name[0] == '.')
+		if (!g_flags_ls->a && !g_flags_ls->f && !g_flags_ls->A && struct_array[i]->file_name[0] == '.')
 			continue ;
-		if (g_flags_ls->l || g_flags_ls->g)
+		if (g_flags_ls->A && struct_array[i]->chmod[0] == 'd' &&
+			(!ft_strcmp((const char *)struct_array[i]->file_name, ".")
+			|| !ft_strcmp((const char *)struct_array[i]->file_name, "..")))
+			continue ;
+		if ((g_flags_ls->l && !g_flags_ls->m) || (g_flags_ls->g && !g_flags_ls->m))
 		{
 			printf("%-12s", struct_array[i]->chmod);
 			printf("%*d ", link_len, struct_array[i]->nlink);
@@ -68,7 +72,10 @@ void	print_ls(l_file **struct_array, char *dir_name)
 			printf("%3s ", struct_array[i]->day);
 			printf("%.5s ", struct_array[i]->time);
 		}
-		printf("%s\n", struct_array[i]->file_name);
+		if (g_flags_ls->m && struct_array[i + 1])
+			printf("%s, ", struct_array[i]->file_name);
+		else
+			printf("%s\n", struct_array[i]->file_name);
 	}
 }
 
