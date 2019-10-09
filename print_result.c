@@ -21,18 +21,21 @@ static int	max_len(l_file **struct_array, char column)
 
 	max_len = 0;
 	len = 0;
-	i = 0;
-	while (struct_array[i])
+	i = -1;
+	while (struct_array[++i])
 	{
+		if (!g_flags_ls->a && struct_array[i]->file_name[0] == '.')
+			continue ;
 		if (column == 'l')
 			len = int_len(struct_array[i]->nlink);
 		if (column == 'f')
 			len = int_len(struct_array[i]->file_size);
 		if (column == 'u')
 			len = ft_strlen(struct_array[i]->user_name);
+		if (column == 'b')
+			len = int_len(struct_array[i]->st_blocks);
 		if (max_len < len)
 			max_len = len;
-		i++;
 	}
 	return (max_len);
 }
@@ -43,11 +46,13 @@ void	print_ls(l_file **struct_array, char *dir_name)
 	int link_len;
 	int	size_len;
 	int user_len;
+	int block_len;
 
 	i = -1;
 	link_len = max_len(struct_array, 'l');
 	size_len = max_len(struct_array, 'f');
 	user_len = max_len(struct_array, 'u');
+	block_len = max_len(struct_array, 'b');
 	if (g_flags_ls->R && !ft_strequ(dir_name, "."))
 		printf("\n%s:\n", dir_name);
 	if (g_flags_ls->l)
@@ -62,6 +67,8 @@ void	print_ls(l_file **struct_array, char *dir_name)
 			continue ;
 		if ((g_flags_ls->l && !g_flags_ls->m) || (g_flags_ls->g && !g_flags_ls->m))
 		{
+			if (g_flags_ls->s)
+				printf("%*d ", block_len, struct_array[i]->st_blocks);
 			printf("%-12s", struct_array[i]->chmod);
 			printf("%*d ", link_len, struct_array[i]->nlink);
 			if (!(g_flags_ls->g))

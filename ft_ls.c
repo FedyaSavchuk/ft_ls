@@ -33,6 +33,8 @@ static void	check_flags(int argc, char **argv)
 				g_flags_ls->f = 1;
 			else if (argv[i][j] == 'm')
 				g_flags_ls->m = 1;
+			else if (argv[i][j] == 's')
+				g_flags_ls->s = 1;
 			j++;
 		}
 		i++;
