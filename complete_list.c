@@ -159,7 +159,6 @@ static void		add_total(l_file *start_list)
 		start_list->total = total;
 		start_list = start_list->next;
 	}
-	return (start_list);
 }
 
 l_file			*complete_list(l_file *files, char *file_name)
