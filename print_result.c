@@ -49,7 +49,7 @@ void	print_ls(l_file **struct_array, char *dir_name)
 		printf("total %d\n", struct_array[i + 1]->total);
 	while (struct_array[++i])
 	{
-		if (!g_flags_ls->a)
+		if (!g_flags_ls->a && struct_array[i]->file_name[0] == '.')
 			continue ;
 		if (g_flags_ls->l)
 		{

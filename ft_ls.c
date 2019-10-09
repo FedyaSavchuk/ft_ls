@@ -1,4 +1,5 @@
 #include "ft_ls.h"
+#define MAX_LEN 256
 
 void	clear_flags()
 {
@@ -143,11 +144,24 @@ void	ft_ls(char *file_name)
 
 int 	main(int argc, char **argv)
 {
+	int			i;
+	static char	*dirs[MAX_LEN] = {NULL};
+	int			j;
+
+	i = 0;
+	j = 0;
 	g_flags_ls = (l_flags *)malloc(sizeof(l_flags) * 1);
 	clear_flags();
 	check_flags(argc, argv);
-
-	ft_ls(".");
+	while (++i < argc)
+		if (argv[i][0] != '-')
+			dirs[j++] = argv[i];
+	i = -1;
+	if (j == 0)
+		ft_ls(".");
+	else
+		while (dirs[++i])
+			ft_ls(dirs[i]);
 	return (0);
 }
 

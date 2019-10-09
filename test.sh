@@ -1,5 +1,17 @@
 # ${1} flags variable with "-"
-gcc /Users/hspeeder/Desktop/School_42/Ft_ls/*.c /Users/hspeeder/Desktop/School_42/Ft_ls/Libft/*.c
-/Users/hspeeder/Desktop/School_42/Ft_ls/a.out ${1} > user.output
-ls ${1} > system.output
+# ${2} file variables
+gcc *.c Libft/*.c
+if [[ -n ${1} && -z ${2} ]]; then
+  ./a.out ${1} > user.output
+  ls ${1} > system.output
+elif [[ -n ${2} && -n ${1} ]]; then
+  ./a.out ${1} ${2} > user.output
+  ls ${1} ${2} > system.output
+elif [[ -n ${2} && -z ${1} ]]; then
+  ./a.out ${2} > user.output
+  ls ${2} > system.output
+else
+  ./a.out > user.output
+  ls > system.output
+fi
 diff -u system.output user.output
