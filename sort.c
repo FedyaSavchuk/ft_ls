@@ -1,30 +1,17 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   sort.c                                             :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: aolen <marvin@42.fr>                       +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2019/10/09 13:56:30 by aolen             #+#    #+#             */
-/*   Updated: 2019/10/09 13:56:32 by aolen            ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #include "ft_ls.h"
 
 l_file		**sort_by_ascii(l_file **struct_array)
 {
-	int		i;
-	int		j;
-	l_file	*temp;
+	int i;
+	int j;
+	l_file *temp;
 
 	i = 1;
 	while (struct_array[i])
 	{
 		j = i - 1;
 		temp = struct_array[i];
-		while (j >= 0 &&
-				ft_strcmp(struct_array[j]->file_name, temp->file_name) > 0)
+		while (j >= 0 && ft_strcmp(struct_array[j]->file_name, temp->file_name) > 0)
 		{
 			struct_array[j + 1] = struct_array[j];
 			j--;
@@ -37,8 +24,8 @@ l_file		**sort_by_ascii(l_file **struct_array)
 
 l_file		**sort_by_time(l_file **struct_array)
 {
-	int		i;
-	int		j;
+	int i;
+	int j;
 	l_file	*temp;
 
 	i = 1;
@@ -46,29 +33,7 @@ l_file		**sort_by_time(l_file **struct_array)
 	{
 		j = i - 1;
 		temp = struct_array[i];
-		while (j >= 0 && struct_array[j]->unix_time - temp->unix_time < 0)
-		{
-			struct_array[j + 1] = struct_array[j];
-			j--;
-		}
-		struct_array[j + 1] = temp;
-		i++;
-	}
-	return (struct_array);
-}
-
-l_file		**sort_by_size(l_file **struct_array)
-{
-	int		i;
-	int		j;
-	l_file	*temp;
-
-	i = 1;
-	while (struct_array[i])
-	{
-		j = i - 1;
-		temp = struct_array[i];
-		while (j >= 0 && struct_array[j]->file_size - temp->file_size < 0)
+		while (j >= 0 && ft_strcmp(struct_array[j]->time, temp->time) < 0)
 		{
 			struct_array[j + 1] = struct_array[j];
 			j--;

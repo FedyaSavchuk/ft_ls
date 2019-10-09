@@ -13,6 +13,21 @@
 #include "ft_ls.h"
 #include "stdio.h"
 
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   complete_list.c                                    :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: aolen <marvin@42.fr>                       +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2019/10/09 11:50:19 by aolen             #+#    #+#             */
+/*   Updated: 2019/10/09 11:50:21 by aolen            ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "ft_ls.h"
+#include "stdio.h"
+
 /*
 ** fill_chmod
 ** --------------
@@ -144,8 +159,8 @@ static void		add_total(l_file *start_list)
 			continue ;
 		}
 		if ((g_flags_ls->A) && start_list->chmod[0] == 'd' &&
-		(ft_strequ(start_list->file_name, ".") ||
-		ft_strequ(start_list->file_name, "..")))
+			(ft_strequ(start_list->file_name, ".") ||
+			 ft_strequ(start_list->file_name, "..")))
 		{
 			start_list = start_list->next;
 			continue ;

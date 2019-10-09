@@ -22,6 +22,10 @@ typedef struct	p_flags
 				int r;							// вывод в обратном порядке
 				int t;							// сортировка по времени
 				int g;							// работает как -l, только не выводит создателя
+				int A;
+				int f;
+				int S;
+				int m;
 }				l_flags;
 
 l_flags *g_flags_ls;
