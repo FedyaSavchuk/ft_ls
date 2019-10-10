@@ -13,6 +13,8 @@
 #include "ft_ls.h"
 #include "stdio.h"
 #define HALF_YEAR 2629743 * 6
+#define ELDER_BITS 261632
+#define BUF_SIZE 256
 
 /*
 ** fill_chmod
@@ -62,21 +64,36 @@ static void		fill_chmod(int n, char *chmod)
 **	d_name: name of file or directory
 */
 
-static l_file	*add_chmod(l_file *files, char *d_name)
+static l_file	*add_chmod(l_file *files, char *d_name, struct dirent *dir)
 {
-	unsigned int	s;
 	char			*chmod;
 	struct stat		file_stat;
-	int				i;
+	char			s[BUF_SIZE];
 
 	stat(d_name, &file_stat);
 	chmod = ft_strnew(12);
-	if (S_ISREG(file_stat.st_mode))
-		chmod = ft_strcat(chmod, "-");
-	else if (S_ISDIR(file_stat.st_mode))
-		chmod = ft_strcat(chmod, "d");
-	else if (S_ISLNK(file_stat.st_mode))
+	if (dir->d_type == DT_LNK)
+	{
 		chmod = ft_strcat(chmod, "l");
+		if (g_flags_ls->l)
+		{
+			files->file_name = ft_strjoin(files->file_name, " -> ");
+			readlink(d_name, s, BUF_SIZE);
+			files->file_name = ft_strjoin_safe(files->file_name, s);
+		}
+	}
+	else if (dir->d_type == DT_REG)
+		chmod = ft_strcat(chmod, "-");
+	else if (dir->d_type == DT_DIR)
+		chmod = ft_strcat(chmod, "d");
+	else if (dir->d_type == DT_CHR)
+		chmod = ft_strcat(chmod, "c");
+	else if (dir->d_type == DT_BLK)
+		chmod = ft_strcat(chmod, "b");
+	else if (dir->d_type == DT_FIFO)
+		chmod = ft_strcat(chmod, "p");
+	else if (dir->d_type == DT_SOCK)
+		chmod = ft_strcat(chmod, "s");
 	fill_chmod(file_stat.st_mode, chmod);
 	files->chmod = chmod;
 	return (files);
@@ -100,14 +117,11 @@ static l_file	*add_chmod(l_file *files, char *d_name)
 static l_file	*add_params_f(l_file *files, char **d_name, struct dirent *dir)
 {
 	struct stat		file_stat;
-	struct passwd	*pwd;
-	char			**words;
 	char			*date;
-	//Sun Oct  8 10:10:10 2019
 
-	stat(*d_name, &file_stat);
+	lstat(*d_name, &file_stat);
 	files->file_name = dir->d_name;
-	add_chmod(files, *d_name);
+	add_chmod(files, *d_name, dir);
 	files->unix_time = file_stat.st_mtimespec.tv_sec;
 	date = ctime(&files->unix_time);
 	files->date = ft_strndup(&date[4], 7);

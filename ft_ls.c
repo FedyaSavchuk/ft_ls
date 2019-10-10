@@ -74,7 +74,6 @@ void	ft_ls(char *file_name)
 	l_file **struct_array;
 	int i;
 	char *ptr;
-	char *temp;
 
 	i = -1;
 	files = (l_file *)malloc(sizeof(l_file) * 1);
