@@ -68,19 +68,19 @@ static l_file	*add_chmod(l_file *files, char *d_name, struct dirent *dir)
 {
 	char			*chmod;
 	struct stat		file_stat;
-	char			s[BUF_SIZE];
+	//char			s[BUF_SIZE];
 
 	lstat(d_name, &file_stat);
 	chmod = ft_strnew(12);
 	if (dir->d_type == DT_LNK)
 	{
 		chmod = ft_strcat(chmod, "l");
-		if (g_flags_ls->l)
-		{
-			files->file_name = ft_strjoin(files->file_name, " -> ");
-			readlink(d_name, s, BUF_SIZE);
-			files->file_name = ft_strjoin_safe(files->file_name, s);
-		}
+//		if (g_flags_ls->l)
+//		{
+//			files->file_name = ft_strjoin(files->file_name, " -> ");
+//			readlink(d_name, s, BUF_SIZE);
+//			files->file_name = ft_strjoin_safe(files->file_name, s);
+//		}
 	}
 	else if (dir->d_type == DT_REG)
 		chmod = ft_strcat(chmod, "-");
@@ -121,6 +121,7 @@ static l_file	*add_params_f(l_file *files, char **d_name, struct dirent *dir)
 
 	lstat(*d_name, &file_stat);
 	files->file_name = dir->d_name;
+	printf("%s\n", files->file_name);
 	add_chmod(files, *d_name, dir);
 	files->unix_time = file_stat.st_mtimespec.tv_sec;
 	date = ctime(&files->unix_time);

@@ -1,44 +1,58 @@
 #include "ft_ls.h"
 #define MAX_LEN 256
 
-static void	check_flags(int argc, char **argv)
+static int	check_flags(int argc, char **argv)
 {
 	int i;
 	int j;
 
 	i = 1;
 	j = 0;
-	while (i < argc && argv[i][j] == '-')
+	while (i < argc)
 	{
 		j = 0;
-		while (argv[i][j])
+		if (argv[i][j] == '-')
 		{
-			if (argv[i][j] == 'l')
-				g_flags_ls->l = 1;
-			else if (argv[i][j] == 'R')
-				g_flags_ls->R = 1;
-			else if (argv[i][j] == 'a')
-				g_flags_ls->a = 1;
-			else if (argv[i][j] == 'r')
-				g_flags_ls->r = 1;
-			else if (argv[i][j] == 't')
-				g_flags_ls->t = 1;
-			else if (argv[i][j] == 'g')
-				g_flags_ls->g = 1;
-			else if (argv[i][j] == 'A')
-				g_flags_ls->A = 1;
-			else if (argv[i][j] == 'S')
-				g_flags_ls->S = 1;
-			else if (argv[i][j] == 'f')
-				g_flags_ls->f = 1;
-			else if (argv[i][j] == 'm')
-				g_flags_ls->m = 1;
-			else if (argv[i][j] == 's')
-				g_flags_ls->s = 1;
 			j++;
+			while (argv[i][j])
+			{
+
+				if (argv[i][j] == 'l')
+					g_flags_ls->l = 1;
+				else if (argv[i][j] == 'R')
+					g_flags_ls->R = 1;
+				else if (argv[i][j] == 'a')
+					g_flags_ls->a = 1;
+				else if (argv[i][j] == 'r')
+					g_flags_ls->r = 1;
+				else if (argv[i][j] == 't')
+					g_flags_ls->t = 1;
+				else if (argv[i][j] == 'g')
+					g_flags_ls->g = 1;
+				else if (argv[i][j] == 'A')
+					g_flags_ls->A = 1;
+				else if (argv[i][j] == 'S')
+					g_flags_ls->S = 1;
+				else if (argv[i][j] == 'f')
+					g_flags_ls->f = 1;
+				else if (argv[i][j] == 'm')
+					g_flags_ls->m = 1;
+				else if (argv[i][j] == 's')
+					g_flags_ls->s = 1;
+				else
+				{
+					printf("ls: illegal option -- %c\n", argv[i][j]);
+					printf("usage: ls [ARSafglmrst] [file ...]\n");
+					exit(0);
+				}
+				j++;
+			}
 		}
+		else
+			return (i);
 		i++;
 	}
+	return (i);
 }
 
 static l_file 	**make_array(l_file *files)
@@ -104,11 +118,10 @@ int 	main(int argc, char **argv)
 	static char	*dirs[MAX_LEN] = {NULL};
 	int			j;
 
-	i = 0;
 	j = 0;
 	g_flags_ls = (l_flags *)malloc(sizeof(l_flags) * 1);
 	ft_bzero(g_flags_ls, sizeof(l_flags));
-	check_flags(argc, argv);
+	i = check_flags(argc, argv) - 1;
 	while (++i < argc)
 		if (argv[i][0] != '-')
 			dirs[j++] = argv[i];
@@ -117,7 +130,14 @@ int 	main(int argc, char **argv)
 		ft_ls(".");
 	else
 		while (dirs[++i])
+		{
+			if (!opendir(dirs[i]))
+			{
+				print_errors(dirs[i]);
+				continue;
+			}
 			ft_ls(dirs[i]);
+		}
 	return (0);
 }
 

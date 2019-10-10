@@ -18,7 +18,8 @@ FUNCS = \
 		ft_strjoin_safe \
 		ft_strndup \
 		print_result \
-		sort
+		sort \
+		print_errors
 NAME = ft_ls
 SRC = $(addprefix $(SRC_PATH), $(addsuffix .c, $(FUNCS)))
 OBJS = $(addsuffix .o, $(FUNCS))
