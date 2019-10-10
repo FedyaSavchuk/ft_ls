@@ -70,7 +70,7 @@ static l_file	*add_chmod(l_file *files, char *d_name, struct dirent *dir)
 	struct stat		file_stat;
 	char			s[BUF_SIZE];
 
-	stat(d_name, &file_stat);
+	lstat(d_name, &file_stat);
 	chmod = ft_strnew(12);
 	if (dir->d_type == DT_LNK)
 	{
