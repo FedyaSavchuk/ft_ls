@@ -1,4 +1,5 @@
 #include "ft_ls.h"
+#include <errno.h>
 #define MAX_LEN 256
 
 static int	check_flags(int argc, char **argv)
@@ -40,11 +41,7 @@ static int	check_flags(int argc, char **argv)
 				else if (argv[i][j] == 's')
 					g_flags_ls->s = 1;
 				else
-				{
-					printf("ls: illegal option -- %c\n", argv[i][j]);
-					printf("usage: ls [ARSafglmrst] [file ...]\n");
-					exit(0);
-				}
+					print_usage(argv[0], argv[i][j]);
 				j++;
 			}
 		}
@@ -68,12 +65,12 @@ static l_file 	**make_array(l_file *files)
 		i++;
 		files = files->next;
 	}
-	struct_array = (l_file **)malloc(sizeof(l_file) * i);
+	struct_array = (l_file **)malloc(sizeof(*struct_array) * i);
 	i = 0;
 	files = start;
 	while (files)
 	{
-		struct_array[i] = (l_file *)malloc(sizeof(l_file) * 1);
+		struct_array[i] = (l_file *)malloc(sizeof(l_file*) * 1);
 		struct_array[i] = files;
 		files = files->next;
 		i++;
@@ -82,7 +79,21 @@ static l_file 	**make_array(l_file *files)
 	return (struct_array);
 }
 
-void	ft_ls(char *file_name)
+static l_file	**sort_list(l_file *files)
+{
+	l_file **struct_array;
+
+	struct_array = make_array(files);
+	if (!g_flags_ls->f)
+		sort_by_ascii(struct_array);
+	if (g_flags_ls->t && !g_flags_ls->f)
+		sort_by_time(struct_array);
+	if (g_flags_ls->S && !g_flags_ls->f)
+		sort_by_size(struct_array);
+	return (struct_array);
+}
+
+void			ft_ls(char *file_name, int r_flag)
 {
 	l_file *files;
 	l_file **struct_array;
@@ -91,21 +102,20 @@ void	ft_ls(char *file_name)
 
 	i = -1;
 	files = (l_file *)malloc(sizeof(l_file) * 1);
-	complete_list(files, file_name);
-	struct_array = make_array(files);
-	if (!g_flags_ls->f)
-		sort_by_ascii(struct_array);
-	if (g_flags_ls->t && !g_flags_ls->f)
-		sort_by_time(struct_array);
-	print_ls(struct_array, file_name);
+	if (complete_list(files, file_name) < 0)
+		return print_errors(&file_name);
+	struct_array = sort_list(files);
+	print_ls(struct_array, file_name, r_flag);
 	while (struct_array[++i] && g_flags_ls->R)
 	{
 		if (struct_array[i]->chmod[0] =='d' && !(ft_strequ(struct_array[i]->file_name,".") ||
 			ft_strequ(struct_array[i]->file_name,"..")))
 		{
-			ptr = ft_strjoin_safe(file_name, "/");
-			ptr = ft_strjoin_safe(ptr, struct_array[i]->file_name);
-			ft_ls(ptr);
+			if (!(g_flags_ls->A || g_flags_ls->a) && struct_array[i]->file_name[0] == '.')
+				continue ;
+			ptr = ft_strjoin(file_name, "/");
+			ptr = ft_strjoin(ptr, struct_array[i]->file_name);
+			ft_ls(ptr, 1);
 			ft_strdel(&ptr);
 		}
 	}
@@ -117,6 +127,7 @@ int 	main(int argc, char **argv)
 	int			i;
 	static char	*dirs[MAX_LEN] = {NULL};
 	int			j;
+	extern int	errno;
 
 	j = 0;
 	g_flags_ls = (l_flags *)malloc(sizeof(l_flags) * 1);
@@ -125,20 +136,22 @@ int 	main(int argc, char **argv)
 	while (++i < argc)
 		if (argv[i][0] != '-')
 			dirs[j++] = argv[i];
+	sort_agrs(dirs, j);
 	i = -1;
 	if (j == 0)
-		ft_ls(".");
+		ft_ls(".", 0);
 	else
 		while (dirs[++i])
+			if (!opendir(dirs[i]) && errno == ENOENT)
+				print_errors(&dirs[i]);
+	while (--j >= 0)
+		if (dirs[j] != NULL)
 		{
-			if (!opendir(dirs[i]))
-			{
-				print_errors(dirs[i]);
-				continue;
-			}
-			ft_ls(dirs[i]);
+			if (i > 1)
+				print_directory(dirs[j]);
+			ft_ls(dirs[j], 0);
 		}
-	return (0);
+	return (errno ? 1 : 0);
 }
 
 //	clear_flags();

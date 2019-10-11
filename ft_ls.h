@@ -55,16 +55,18 @@ struct s_ls_vars
 				unsigned int	total_blocks;
 } g_ls_vars;
 
-char		*ft_itoa_base(long long int nbr, int base, char reg);	// для разрешений (chmod)
-l_file		*complete_list(l_file *files, char *file_name);
-void		clear_list(l_file *files);
+int			complete_list(l_file *files, char *file_name);
 l_file		**sort_by_ascii(l_file **struct_array);		// сортирует файлы и каталоги по ASCII
-void		print_ls(l_file **struct_array, char *dir_name);
+void		print_ls(l_file **struct_array, char *dir_name, int r_flag);
 l_file		**sort_by_time(l_file **struct_array);
 l_file		**sort_by_size(l_file **struct_array);
 char		*ft_strjoin_safe(char *str1, const char *str2);
 void		free_3ptr(DIR **ptr, struct dirent **dir, char **c);
 char		*ft_strndup(const char *str, int n);
+void		print_errors(char **filename);
+void		print_usage(char *argv0, char invalid_flag);
+void 		print_directory(char *filename);
+void		sort_agrs(char **argv, int size);
 
 #endif
 

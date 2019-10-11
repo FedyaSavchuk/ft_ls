@@ -74,7 +74,7 @@ l_file		**sort_by_size(l_file **struct_array)
 	{
 		j = i - 1;
 		temp = struct_array[i];
-		while (j >= 0 && r * (struct_array[j]->file_size - temp->file_size) > 0)
+		while (j >= 0 && r * (struct_array[j]->file_size - temp->file_size) < 0)
 		{
 			struct_array[j + 1] = struct_array[j];
 			j--;
@@ -83,4 +83,29 @@ l_file		**sort_by_size(l_file **struct_array)
 		i++;
 	}
 	return (struct_array);
+}
+
+void	sort_agrs(char **argv, int size)
+{
+	int i;
+	int j;
+	int r;
+	char *temp;
+
+	if (size < 2)
+		return ;
+	r = g_flags_ls->r ? -1 : 1;
+	i = 2;
+	while (i < size)
+	{
+		j = i - 1;
+		temp = argv[i];
+		while (j >= 1 && r * ft_strcmp(argv[j], temp) < 0)
+		{
+			argv[j + 1] = argv[j];
+			j--;
+		}
+		argv[j + 1] = temp;
+		i++;
+	}
 }

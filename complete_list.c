@@ -68,19 +68,19 @@ static l_file	*add_chmod(l_file *files, char *d_name, struct dirent *dir)
 {
 	char			*chmod;
 	struct stat		file_stat;
-	//char			s[BUF_SIZE];
+	char			s[BUF_SIZE];
 
 	lstat(d_name, &file_stat);
 	chmod = ft_strnew(12);
 	if (dir->d_type == DT_LNK)
 	{
 		chmod = ft_strcat(chmod, "l");
-//		if (g_flags_ls->l)
-//		{
-//			files->file_name = ft_strjoin(files->file_name, " -> ");
-//			readlink(d_name, s, BUF_SIZE);
-//			files->file_name = ft_strjoin_safe(files->file_name, s);
-//		}
+		if (g_flags_ls->l)
+		{
+			files->file_name = ft_strjoin(files->file_name, " -> ");
+			readlink(d_name, s, BUF_SIZE);
+			files->file_name = ft_strjoin_safe(files->file_name, s);
+		}
 	}
 	else if (dir->d_type == DT_REG)
 		chmod = ft_strcat(chmod, "-");
@@ -120,8 +120,7 @@ static l_file	*add_params_f(l_file *files, char **d_name, struct dirent *dir)
 	char			*date;
 
 	lstat(*d_name, &file_stat);
-	files->file_name = dir->d_name;
-	printf("%s\n", files->file_name);
+	files->file_name = ft_strdup(dir->d_name);
 	add_chmod(files, *d_name, dir);
 	files->unix_time = file_stat.st_mtimespec.tv_sec;
 	date = ctime(&files->unix_time);
@@ -185,7 +184,7 @@ static void		add_total(l_file *start_list)
 **	file_name: name of directory that will be opened
 */
 
-l_file			*complete_list(l_file *files, char *file_name)
+int				complete_list(l_file *files, char *file_name)
 {
 	DIR				*ptr;
 	struct dirent	*dir;
@@ -195,7 +194,8 @@ l_file			*complete_list(l_file *files, char *file_name)
 
 	file_name = ft_strjoin(file_name, "/");
 	start_list = files;
-	ptr = opendir(file_name);
+	if (!(ptr = opendir(file_name)))
+		return (-1);
 	dir = readdir(ptr);
 	while (dir)
 	{
@@ -211,5 +211,5 @@ l_file			*complete_list(l_file *files, char *file_name)
 	files->next = NULL;
 	add_total(start_list);
 	free_3ptr(&ptr, &dir, &file_name);
-	return (start_list);
+	return (0);
 }

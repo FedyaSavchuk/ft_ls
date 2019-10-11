@@ -42,7 +42,7 @@ static int	max_len(l_file **struct_array, char column)
 	return (max_len);
 }
 
-void	print_ls(l_file **struct_array, char *dir_name)
+void	print_ls(l_file **struct_array, char *dir_name, int r_flag)
 {
 	int i;
 	int link_len;
@@ -55,9 +55,9 @@ void	print_ls(l_file **struct_array, char *dir_name)
 	size_len = max_len(struct_array, 'f');
 	user_len = max_len(struct_array, 'u');
 	block_len = max_len(struct_array, 'b');
-	if (g_flags_ls->R && !ft_strequ(dir_name, "."))
+	if (r_flag)
 		printf("\n%s:\n", dir_name);
-	if (g_flags_ls->l)
+	if (g_flags_ls->l && (g_ls_vars.total_blocks != 0 || struct_array[2]))
 		printf("total %d\n", g_ls_vars.total_blocks);
 	while (struct_array[++i])
 	{
@@ -78,7 +78,6 @@ void	print_ls(l_file **struct_array, char *dir_name)
 			printf("%.*s  ", max_len(struct_array, 'g'), struct_array[i]->group);
 			printf("%*d ", size_len, struct_array[i]->file_size);
 			printf("%s", struct_array[i]->date);
-			//printf("%3s ", struct_array[i]->day);
 			printf("%5.5s ", struct_array[i]->time);
 		}
 		if (g_flags_ls->m && struct_array[i + 1])
@@ -88,4 +87,9 @@ void	print_ls(l_file **struct_array, char *dir_name)
 	}
 }
 
+void print_directory(char *filename)
+{
+	ft_putstr(filename);
+	ft_putendl(":");
+}
 

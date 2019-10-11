@@ -15,18 +15,31 @@
 
 extern int errno;
 
-void	print_errors(char *filename)
+void	print_errors(char **filename)
 {
 	if (errno == EACCES)
 	{
+		ft_putendl("");
+		print_directory(*filename);
 		ft_putstr_fd("ft_ls: ", 2);
-		ft_putstr_fd(filename, 2);
+		ft_putstr_fd(*filename, 2);
 		ft_putstr_fd(": Permission denied\n", 2);
 	}
 	if (errno == ENOENT)
 	{
 		ft_putstr_fd("ft_ls: ", 2);
-		ft_putstr_fd(filename, 2);
+		ft_putstr_fd(*filename, 2);
 		ft_putstr_fd(": No such file or directory\n", 2);
+		*filename = NULL;
 	}
+}
+
+void	print_usage(char *argv0, char invalid_flag)
+{
+	ft_putstr_fd(argv0, 2);
+	ft_putstr_fd(": illegal option -- ", 2);
+	ft_putchar_fd(invalid_flag, 2);
+	ft_putstr_fd("\n", 2);
+	ft_putendl_fd("usage: ls [-ARSafglmrst] [file ...]", 2);
+	exit(1);
 }
