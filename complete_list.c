@@ -14,7 +14,7 @@
 #include "stdio.h"
 #define HALF_YEAR 2629743 * 6
 #define ELDER_BITS 261632
-#define BUF_SIZE 256
+#define BUF_SIZE 512
 
 /*
 ** fill_chmod
@@ -78,6 +78,7 @@ static l_file	*add_chmod(l_file *files, char *d_name, struct dirent *dir)
 		if (g_flags_ls->l)
 		{
 			files->file_name = ft_strjoin(files->file_name, " -> ");
+			ft_bzero(s, BUF_SIZE);
 			readlink(d_name, s, BUF_SIZE);
 			files->file_name = ft_strjoin_safe(files->file_name, s);
 		}

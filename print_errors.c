@@ -21,16 +21,17 @@ void	print_errors(char **filename)
 	{
 		ft_putendl("");
 		print_directory(*filename);
-		ft_putstr_fd("ft_ls: ", 2);
-		ft_putstr_fd(*filename, 2);
+		ft_putstr_fd("ls: ", 2);
+		ft_putstr_fd(&(*filename)[2], 2);
 		ft_putstr_fd(": Permission denied\n", 2);
 	}
 	if (errno == ENOENT)
 	{
-		ft_putstr_fd("ft_ls: ", 2);
+		ft_putstr_fd("ls: ", 2);
+		*filename = ((*filename)[1] == '/') ? &(*filename)[2] : *filename;
 		ft_putstr_fd(*filename, 2);
 		ft_putstr_fd(": No such file or directory\n", 2);
-		*filename = NULL;
+		*filename = "";
 	}
 }
 
@@ -40,6 +41,6 @@ void	print_usage(char *argv0, char invalid_flag)
 	ft_putstr_fd(": illegal option -- ", 2);
 	ft_putchar_fd(invalid_flag, 2);
 	ft_putstr_fd("\n", 2);
-	ft_putendl_fd("usage: ls [-ARSafglmrst] [file ...]", 2);
+	ft_putendl_fd("usage: ls [-ARSafglmrst1] [file ...]", 2);
 	exit(1);
 }

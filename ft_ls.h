@@ -27,6 +27,7 @@ typedef struct	p_flags
 				int S;
 				int m;
 				int s;
+				int one;
 }				l_flags;
 
 l_flags *g_flags_ls;

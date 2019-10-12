@@ -95,12 +95,12 @@ void	sort_agrs(char **argv, int size)
 	if (size < 2)
 		return ;
 	r = g_flags_ls->r ? -1 : 1;
-	i = 2;
+	i = 1;
 	while (i < size)
 	{
 		j = i - 1;
 		temp = argv[i];
-		while (j >= 1 && r * ft_strcmp(argv[j], temp) < 0)
+		while (j >= 0 && r * ft_strcmp(argv[j], temp) < 0)
 		{
 			argv[j + 1] = argv[j];
 			j--;

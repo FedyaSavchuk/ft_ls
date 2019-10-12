@@ -1,6 +1,6 @@
 #include "ft_ls.h"
 #include <errno.h>
-#define MAX_LEN 256
+#define MAX_LEN 512
 
 static int	check_flags(int argc, char **argv)
 {
@@ -8,16 +8,14 @@ static int	check_flags(int argc, char **argv)
 	int j;
 
 	i = 1;
-	j = 0;
 	while (i < argc)
 	{
 		j = 0;
-		if (argv[i][j] == '-')
+		if (argv[i][j] == '-' && argv[i][j + 1] != 0)
 		{
 			j++;
 			while (argv[i][j])
 			{
-
 				if (argv[i][j] == 'l')
 					g_flags_ls->l = 1;
 				else if (argv[i][j] == 'R')
@@ -40,6 +38,10 @@ static int	check_flags(int argc, char **argv)
 					g_flags_ls->m = 1;
 				else if (argv[i][j] == 's')
 					g_flags_ls->s = 1;
+				else if (argv[i][j] == '1' )
+					g_flags_ls->one = 1;
+				else if (argv[i][j] == '-' && j == 1 && argv[i][j + 1] == '\0')
+					return (i + 1);
 				else
 					print_usage(argv[0], argv[i][j]);
 				j++;
@@ -134,9 +136,8 @@ int 	main(int argc, char **argv)
 	ft_bzero(g_flags_ls, sizeof(l_flags));
 	i = check_flags(argc, argv) - 1;
 	while (++i < argc)
-		if (argv[i][0] != '-')
+		if ((argv[i]))
 			dirs[j++] = argv[i];
-	sort_agrs(dirs, j);
 	i = -1;
 	if (j == 0)
 		ft_ls(".", 0);
@@ -144,14 +145,15 @@ int 	main(int argc, char **argv)
 		while (dirs[++i])
 			if (!opendir(dirs[i]) && errno == ENOENT)
 				print_errors(&dirs[i]);
+	sort_agrs(dirs, j);
 	while (--j >= 0)
-		if (dirs[j] != NULL)
+		if (dirs[j][0])
 		{
 			if (i > 1)
 				print_directory(dirs[j]);
 			ft_ls(dirs[j], 0);
 		}
-	return (errno ? 1 : 0);
+	return (errno != 0 ? 1 : 0);
 }
 
 //	clear_flags();

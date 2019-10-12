@@ -74,8 +74,8 @@ void	print_ls(l_file **struct_array, char *dir_name, int r_flag)
 			printf("%-12s", struct_array[i]->chmod);
 			printf("%*d ", link_len, struct_array[i]->nlink);
 			if (!(g_flags_ls->g))
-				printf("%*s  ", user_len, struct_array[i]->user_name);
-			printf("%.*s  ", max_len(struct_array, 'g'), struct_array[i]->group);
+				printf("%-*s  ", user_len, struct_array[i]->user_name);
+			printf("%-*s  ", max_len(struct_array, 'g'), struct_array[i]->group);
 			printf("%*d ", size_len, struct_array[i]->file_size);
 			printf("%s", struct_array[i]->date);
 			printf("%5.5s ", struct_array[i]->time);
