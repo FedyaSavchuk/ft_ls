@@ -57,7 +57,7 @@ void	print_ls(l_file **struct_array, char *dir_name, int r_flag)
 	block_len = max_len(struct_array, 'b');
 	if (r_flag)
 		printf("\n%s:\n", dir_name);
-	if (g_flags_ls->l && (g_ls_vars.total_blocks != 0 || struct_array[2]))
+	if (g_flags_ls->l)
 		printf("total %d\n", g_ls_vars.total_blocks);
 	while (struct_array[++i])
 	{
@@ -89,7 +89,9 @@ void	print_ls(l_file **struct_array, char *dir_name, int r_flag)
 
 void print_directory(char *filename)
 {
-	ft_putstr(filename);
-	ft_putendl(":");
+	if (opendir(filename))
+		printf("%s:\n", filename);
+	else
+		printf("%s\n", filename);
 }
 

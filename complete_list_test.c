@@ -25,35 +25,6 @@
 **	d_name: name of file or directory
 */
 
-//static void		fill_chmod(int n, char *chmod)
-//{
-//	char	last3bits;
-//	int		bits_move;
-//
-//	bits_move = 6;
-//	while (bits_move >= 0)
-//	{
-//		last3bits = (n >> bits_move) & 7;
-//		if (last3bits == 0)
-//			chmod = ft_strcat(chmod, "---");
-//		else if (last3bits == 1)
-//			chmod = ft_strcat(chmod, "--x");
-//		else if (last3bits == 2)
-//			chmod = ft_strcat(chmod, "-w-");
-//		else if (last3bits == 3)
-//			chmod = ft_strcat(chmod, "-wx");
-//		else if (last3bits == 4)
-//			chmod = ft_strcat(chmod, "r--");
-//		else if (last3bits == 5)
-//			chmod = ft_strcat(chmod, "r-x");
-//		else if (last3bits == 6)
-//			chmod = ft_strcat(chmod, "rw-");
-//		else if (last3bits == 7)
-//			chmod = ft_strcat(chmod, "rwx");
-//		bits_move -= 3;
-//	}
-//}
-
 static void		fill_chmod(int n, char *chmod)
 {
 	char	last3bits;

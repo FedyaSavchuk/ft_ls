@@ -28,13 +28,13 @@ static int	check_flags(int argc, char **argv)
 					g_flags_ls->t = 1;
 				else if (argv[i][j] == 'g')
 					g_flags_ls->g = 1;
-				else if (argv[i][j] == 'A')
+				else if (argv[i][j] == 'A') ////
 					g_flags_ls->A = 1;
-				else if (argv[i][j] == 'S')
+				else if (argv[i][j] == 'S') ////
 					g_flags_ls->S = 1;
-				else if (argv[i][j] == 'f')
+				else if (argv[i][j] == 'f') ////
 					g_flags_ls->f = 1;
-				else if (argv[i][j] == 'm')
+				else if (argv[i][j] == 'm') ///
 					g_flags_ls->m = 1;
 				else if (argv[i][j] == 's')
 					g_flags_ls->s = 1;
@@ -127,31 +127,38 @@ void			ft_ls(char *file_name, int r_flag)
 int 	main(int argc, char **argv)
 {
 	int			i;
-	static char	*dirs[MAX_LEN] = {NULL};
+	//static char	*dirs[MAX_LEN] = {NULL};
+	static l_file	*dirs[MAX_LEN];
 	int			j;
 	extern int	errno;
+
 
 	j = 0;
 	g_flags_ls = (l_flags *)malloc(sizeof(l_flags) * 1);
 	ft_bzero(g_flags_ls, sizeof(l_flags));
 	i = check_flags(argc, argv) - 1;
 	while (++i < argc)
+	{
+		dirs[j] = (l_file *)malloc(sizeof(l_file) * 1);
 		if ((argv[i]))
-			dirs[j++] = argv[i];
+			dirs[j++]->file_name = argv[i];
+	}
 	i = -1;
 	if (j == 0)
 		ft_ls(".", 0);
 	else
 		while (dirs[++i])
-			if (!opendir(dirs[i]) && errno == ENOENT)
-				print_errors(&dirs[i]);
+			if (!opendir(dirs[i]->file_name) && errno == ENOENT)
+				print_errors(&dirs[i]->file_name);
 	sort_agrs(dirs, j);
 	while (--j >= 0)
-		if (dirs[j][0])
+		if (dirs[j]->file_name[0])
 		{
 			if (i > 1)
-				print_directory(dirs[j]);
-			ft_ls(dirs[j], 0);
+				print_directory(dirs[j]->file_name);
+			ft_ls(dirs[j]->file_name, 0);
+			if (dirs[j - 1] && opendir(dirs[j - 1]->file_name))
+				printf("\n");
 		}
 	return (errno != 0 ? 1 : 0);
 }

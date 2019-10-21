@@ -67,7 +67,7 @@ char		*ft_strndup(const char *str, int n);
 void		print_errors(char **filename);
 void		print_usage(char *argv0, char invalid_flag);
 void 		print_directory(char *filename);
-void		sort_agrs(char **argv, int size);
+void		sort_agrs(l_file **argv, int size);
 
 #endif
 
