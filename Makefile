@@ -13,14 +13,14 @@
 FUNCS = \
 		complete_list \
 		free_data \
-		ft_itoa_base \
 		ft_ls \
 		ft_strjoin_safe \
 		ft_strndup \
 		print_result \
 		sort \
 		print_errors \
-		sort_args
+		sort_args \
+		get_flags
 NAME = ft_ls
 SRC = $(addprefix $(SRC_PATH), $(addsuffix .c, $(FUNCS)))
 OBJS = $(addsuffix .o, $(FUNCS))

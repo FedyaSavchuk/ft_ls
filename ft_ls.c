@@ -2,71 +2,6 @@
 #include <errno.h>
 #define MAX_LEN 512
 
-static int	check_flags(int argc, char **argv)
-{
-	int i;
-	int j;
-
-	i = 1;
-	while (i < argc)
-	{
-		j = 0;
-		if (argv[i][j] == '-' && argv[i][j + 1] != 0)
-		{
-			j++;
-			while (argv[i][j])
-			{
-				if (argv[i][j] == 'l')
-				{
-					g_flags_ls->l = 1;
-					g_flags_ls->one = 0;
-				}
-				else if (argv[i][j] == 'R')
-					g_flags_ls->R = 1;
-				else if (argv[i][j] == 'a')
-				{
-					g_flags_ls->a = 1;
-					g_flags_ls->A = 0;
-				}
-				else if (argv[i][j] == 'r')
-					g_flags_ls->r = 1;
-				else if (argv[i][j] == 't')
-					g_flags_ls->t = 1;
-				else if (argv[i][j] == 'g')
-				{
-					g_flags_ls->g = 1;
-					g_flags_ls->one = 0;
-				}
-				else if (argv[i][j] == 'A') ////
-					g_flags_ls->A = g_flags_ls->a ? 0 : 1;
-				else if (argv[i][j] == 'S') ////
-					g_flags_ls->S = 1;
-				else if (argv[i][j] == 'f') ////
-					g_flags_ls->f = 1;
-				else if (argv[i][j] == 'm') ///
-					g_flags_ls->m = 1;
-				else if (argv[i][j] == 's')
-					g_flags_ls->s = 1;
-				else if (argv[i][j] == '1' )
-				{
-					g_flags_ls->one = 1;
-					g_flags_ls->g = 0;
-					g_flags_ls->l = 0;
-				}
-				else if (argv[i][j] == '-' && j == 1 && argv[i][j + 1] == '\0')
-					return (i + 1);
-				else
-					print_usage(argv[0], argv[i][j]);
-				j++;
-			}
-		}
-		else
-			return (i);
-		i++;
-	}
-	return (i);
-}
-
 static l_file 	**make_array(l_file *files)
 {
 	l_file **struct_array;
@@ -176,38 +111,15 @@ int handle_args(l_file **dirs, l_file **files, int *argc, char **argv)
 
 int 	main(int argc, char **argv)
 {
-	int			i;
+	int				i;
 	static l_file	*files[MAX_LEN] = {NULL};
 	static l_file	*dirs[MAX_LEN] = {NULL};
-	int			j;
+	int				j;
 
 	g_flags_ls = (l_flags *)malloc(sizeof(l_flags) * 1);
 	ft_bzero(g_flags_ls, sizeof(l_flags));
-//	while (++i < argc)
-//	{
-//		dirs[j] = (l_file *)ft_memalloc(sizeof(l_file) * 1);
-//		if ((opendir(argv[i])))
-//			dirs[j++]->file_name = argv[i];
-//		else if (errno == ENOTDIR)
-//	}
 	j = handle_args(dirs, files, &argc, argv);
 	i = -1;
-//	i = -1;
-//	if (j == 0)
-//		ft_ls(".", 0);
-//	else
-//		while (dirs[++i])
-//			if (!opendir(dirs[i]->file_name))
-//			{
-//				if (errno == ENOENT)
-//					print_errors(&dirs[i]->file_name);
-//				else
-//				{
-//					*files = dirs[i];
-//					(*files)++;
-//				}
-//			}
-//	sort_agrs(dirs, j);
 	while (++i < j)
 		if (dirs[i] && dirs[i]->file_name[0])
 		{

@@ -13,7 +13,7 @@
 #include "ft_ls.h"
 #include "stdio.h"
 
-void free_3ptr(DIR **ptr, struct dirent **dir, char **c)
+void	free_3ptr(DIR **ptr, struct dirent **dir, char **c)
 {
 	free(*ptr);
 	free(*dir);

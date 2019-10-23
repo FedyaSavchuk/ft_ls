@@ -12,7 +12,7 @@
 
 #include "ft_ls.h"
 
-char *ft_strjoin_safe(char **str1, const char *str2)
+char	*ft_strjoin_safe(char **str1, const char *str2)
 {
 	char *result;
 

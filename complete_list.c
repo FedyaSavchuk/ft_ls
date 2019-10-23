@@ -17,20 +17,13 @@
 #define BUF_SIZE 1024
 #include <sys/acl.h>
 
-//static long ft_abs(long n)
-//{
-//	if (n < 0)
-//		return (-n);
-//	return (n);
-//}
-
 /*
 ** fill_chmod
 ** --------------
-** 	summary: fills the empty string
+** 	summary: fills the empty string with file's permissions
 **
-**	files: address of file (d_name) structure
-**	d_name: name of file or directory
+**	n: file_stat.st_mode - number that represent file type and permissions
+**	chmod: string in which permissions will be write
 */
 
 static void		fill_chmod(int n, char *chmod)
@@ -41,27 +34,46 @@ static void		fill_chmod(int n, char *chmod)
 	bits_move = 6;
 	while (bits_move >= 0)
 	{
+		ft_strcat(chmod, "---");
 		last3bits = (n >> bits_move) & 7;
 		if (last3bits & 4)
-			chmod = ft_strcat(chmod, "r");
-		else
-			chmod = ft_strcat(chmod, "-");
+			chmod[1 - (bits_move - 6)] = 'r';
 		if (last3bits & 2)
-			chmod = ft_strcat(chmod, "w");
-		else
-			chmod = ft_strcat(chmod, "-");
+			chmod[2 - (bits_move - 6)] = 'w';
 		if (last3bits & 1)
-			chmod = ft_strcat(chmod, "x");
-		else
-			chmod = ft_strcat(chmod, "-");
+			chmod[3 - (bits_move - 6)] = 'x';
 		bits_move -= 3;
 	}
-	if(n & S_ISUID)
+	if (n & S_ISUID)
 		chmod[3] = (chmod[3] == 'x') ? 's' : 'S';
-	if(n & S_ISGID)
+	if (n & S_ISGID)
 		chmod[6] = (chmod[6] == 'x') ? 's' : 'S';
-	if(n & S_ISVTX)
+	if (n & S_ISVTX)
 		chmod[9] = (chmod[9] == 'x') ? 't' : 'T';
+}
+
+/*
+** add_link_tail
+** --------------
+** 	summary: adds to link a "tail" like:
+**		link -> linked_file
+**
+**	files: address of file (d_name) structure
+**	d_name: name of file or directory from working directory
+**	(i.e. "./directory")
+*/
+
+void			add_link_tail(l_file *files, char *d_name)
+{
+	char	s[BUF_SIZE];
+
+	if (g_flags_ls->l || g_flags_ls->g)
+	{
+		files->file_name = ft_strjoin((files->file_name), " -> ");
+		ft_bzero(s, BUF_SIZE);
+		readlink(d_name, s, BUF_SIZE);
+		files->file_name = ft_strjoin_safe(&(files->file_name), s);
+	}
 }
 
 /*
@@ -76,37 +88,28 @@ static void		fill_chmod(int n, char *chmod)
 
 static l_file	*add_chmod_files(l_file *files, char *d_name)
 {
-	char			*chmod;
 	struct stat		file_stat;
-	char			s[BUF_SIZE];
 
 	lstat(d_name, &file_stat);
-	chmod = ft_strnew(12);
+	files->chmod = ft_strnew(12);
 	if (S_ISLNK(file_stat.st_mode))
 	{
-		chmod = ft_strcat(chmod, "l");
-		if (g_flags_ls->l || g_flags_ls->g)
-		{
-			files->file_name = ft_strjoin((files->file_name), " -> ");
-			ft_bzero(s, BUF_SIZE);
-			readlink(d_name, s, BUF_SIZE);
-			files->file_name = ft_strjoin_safe(&(files->file_name), s);
-		}
+		files->chmod = ft_strcat(files->chmod, "l");
+		add_link_tail(files, d_name);
 	}
 	else if (S_ISREG(file_stat.st_mode))
-		chmod = ft_strcat(chmod, "-");
+		files->chmod = ft_strcat(files->chmod, "-");
 	else if (S_ISDIR(file_stat.st_mode))
-		chmod = ft_strcat(chmod, "d");
+		files->chmod = ft_strcat(files->chmod, "d");
 	else if (S_ISCHR(file_stat.st_mode))
-		chmod = ft_strcat(chmod, "c");
+		files->chmod = ft_strcat(files->chmod, "c");
 	else if (S_ISBLK(file_stat.st_mode))
-		chmod = ft_strcat(chmod, "b");
+		files->chmod = ft_strcat(files->chmod, "b");
 	else if (S_ISFIFO(file_stat.st_mode))
-		chmod = ft_strcat(chmod, "p");
+		files->chmod = ft_strcat(files->chmod, "p");
 	else if (S_ISSOCK(file_stat.st_mode))
-		chmod = ft_strcat(chmod, "s");
-	fill_chmod(file_stat.st_mode, chmod);
-	files->chmod = chmod;
+		files->chmod = ft_strcat(files->chmod, "s");
+	fill_chmod(file_stat.st_mode, files->chmod);
 	return (files);
 }
 
@@ -114,68 +117,80 @@ static l_file	*add_chmod_files(l_file *files, char *d_name)
 ** add_chmod
 ** --------------
 ** 	summary: add chmod params to file structure chmod param, from
-**	fileStat.st_mode
+**	dir->d_type
 **
 **	files: address of file (d_name) structure
 **	d_name: name of file or directory
+**	dir: dirent struct of current directory
 */
 
 static l_file	*add_chmod(l_file *files, char *d_name, struct dirent *dir)
 {
-	char			*chmod;
 	struct stat		file_stat;
-	char			s[BUF_SIZE];
 
-	if (dir == NULL)
-		return add_chmod_files(files, d_name);
 	lstat(d_name, &file_stat);
-	chmod = ft_strnew(12);
+	files->chmod = ft_strnew(12);
 	if (dir->d_type == DT_LNK)
 	{
-		chmod = ft_strcat(chmod, "l");
-		if (g_flags_ls->l || g_flags_ls->g)
-		{
-			files->file_name = ft_strjoin(files->file_name, " -> ");
-			ft_bzero(s, BUF_SIZE);
-			readlink(d_name, s, BUF_SIZE);
-			files->file_name = ft_strjoin_safe(&files->file_name, s);
-		}
+		files->chmod = ft_strcat(files->chmod, "l");
+		add_link_tail(files, d_name);
 	}
 	else if (dir->d_type == DT_REG)
-		chmod = ft_strcat(chmod, "-");
+		files->chmod = ft_strcat(files->chmod, "-");
 	else if (dir->d_type == DT_DIR)
-		chmod = ft_strcat(chmod, "d");
+		files->chmod = ft_strcat(files->chmod, "d");
 	else if (dir->d_type == DT_CHR)
-		chmod = ft_strcat(chmod, "c");
+		files->chmod = ft_strcat(files->chmod, "c");
 	else if (dir->d_type == DT_BLK)
-		chmod = ft_strcat(chmod, "b");
+		files->chmod = ft_strcat(files->chmod, "b");
 	else if (dir->d_type == DT_FIFO)
-		chmod = ft_strcat(chmod, "p");
+		files->chmod = ft_strcat(files->chmod, "p");
 	else if (dir->d_type == DT_SOCK)
-		chmod = ft_strcat(chmod, "s");
+		files->chmod = ft_strcat(files->chmod, "s");
 	else
-		chmod = ft_strcat(chmod, "d");
-	fill_chmod(file_stat.st_mode, chmod);
-	files->chmod = chmod;
+		files->chmod = ft_strcat(files->chmod, "d");
+	fill_chmod(file_stat.st_mode, files->chmod);
 	return (files);
 }
 
-void add_major_minor(struct stat file_stat, l_file *files)
+/*
+** add_major_minor
+** --------------
+** 	summary: if file is char-device or block-device calculate
+**	major and minor for it
+**
+**	file_stat: stat structure returned by lstat() function
+**	files: address of file (d_name) structure
+*/
+
+void			add_major_minor(struct stat file_stat, l_file *files)
 {
-	if (S_ISCHR(file_stat.st_mode) || S_ISBLK(file_stat.st_mode)) {
+	if (S_ISCHR(file_stat.st_mode) || S_ISBLK(file_stat.st_mode))
+	{
 		files->maj = major(file_stat.st_rdev);
 		files->min = minor(file_stat.st_rdev);
-	} else {
+	}
+	else
+	{
 		files->maj = 0U;
 		files->min = 0U;
 	}
 }
 
-void	time_and_xattr(l_file *files, char **d_name)
+/*
+** time_and_xattr
+** --------------
+** 	summary: add time (hours:minutes or year) and xattr if file has it
+**
+**	files: address of file (d_name) structure
+**	d_name: pointer to string with filename
+*/
+
+void			time_and_xattr(l_file *files, char **d_name)
 {
 	char	*date;
-	int 	k;
-	acl_t 			acl;
+	int		k;
+	acl_t	acl;
 
 	k = 0;
 	date = ctime(&files->unix_time);
@@ -185,9 +200,9 @@ void	time_and_xattr(l_file *files, char **d_name)
 	else
 	{
 		date = date + 20;
-		while(*date == ' ')
+		while (*date == ' ')
 			date++;
-		while(*(date + k) != '\n')
+		while (*(date + k) != '\n')
 			k++;
 		files->time = ft_strndup(date - 1, k + 1);
 	}
@@ -199,6 +214,7 @@ void	time_and_xattr(l_file *files, char **d_name)
 		ft_strcat(files->chmod, "+");
 	}
 }
+
 /*
 ** add_params
 ** --------------
@@ -214,34 +230,25 @@ void	time_and_xattr(l_file *files, char **d_name)
 **	d_name: name of file or directory
 */
 
-l_file	*add_params_f(l_file *files, char **d_name, struct dirent *dir)
+l_file			*add_params_f(l_file *files, char **d_name, struct dirent *dir)
 {
 	struct stat		file_stat;
-//	char			*date;
-//	acl_t 			acl;
 
 	lstat(*d_name, &file_stat);
-	files->file_name = !files->file_name ? ft_strdup(dir->d_name) : files->file_name;
-	add_chmod(files, *d_name, dir); /////
+	files->file_name = !files->file_name ? ft_strdup(dir->d_name) :
+			files->file_name;
+	if (dir == NULL)
+		add_chmod_files(files, *d_name);
+	else
+		add_chmod(files, *d_name, dir);
 	files->unix_time = file_stat.st_mtimespec.tv_sec;
 	time_and_xattr(files, d_name);
-//	date = ctime(&files->unix_time);
-//	files->date = ft_strndup(&date[4], 7);
-//	files->time = (unsigned long)difftime(time(NULL), files->unix_time) < HALF_YEAR
-//			? ft_strndup(&date[11], 5) :  ft_strndup(&date[20], 4);
 	files->user_name = getpwuid(file_stat.st_uid)->pw_name;
 	files->nlink = file_stat.st_nlink;
 	files->file_size = file_stat.st_size;
 	add_major_minor(file_stat, files);
 	files->st_blocks = file_stat.st_blocks;
 	files->group = getgrgid(file_stat.st_gid)->gr_name;
-//	if (listxattr(*d_name, NULL, 0, XATTR_NOFOLLOW) > 0)
-//		ft_strcat(files->chmod, "@");
-//	else if ((acl = acl_get_link_np(*d_name, ACL_TYPE_EXTENDED)))
-//	{
-//		free(acl);
-//		ft_strcat(files->chmod, "+");
-//	}
 	ft_strdel(dir ? d_name : NULL);
 	return (files);
 }
@@ -294,7 +301,6 @@ static void		add_total(l_file *start_list)
 **	file_name: name of directory that will be opened
 */
 
-
 int				complete_list(l_file *files, char *file_name)
 {
 	DIR				*ptr;
@@ -306,7 +312,6 @@ int				complete_list(l_file *files, char *file_name)
 	file_name = ft_strjoin(file_name, "/");
 	start_list = files;
 	if (!(ptr = opendir(file_name)))
-//		add_params_f(files, &file_name, file_name);
 		return (-1);
 	dir = readdir(ptr);
 	while (dir)

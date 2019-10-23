@@ -16,19 +16,16 @@
 
 void	print_errors(char **filename, int r)
 {
-	char *tmp;
-	extern int errno;
+	char		*tmp;
+	extern int	errno;
 
 	tmp = *filename;
 	if (g_flags_ls->R && r)
-	{
 		while (ft_strchr(tmp, '/'))
 			tmp = ft_strchr(tmp, '/') + 1;
-	}
 	ft_putstr_fd("ls: ", 2);
 	if (ft_strlen(tmp) < 1)
 	{
-
 		ft_putstr_fd("fts_open", 2);
 		ft_putstr_fd(": No such file or directory\n", 2);
 		exit(1);
@@ -41,10 +38,8 @@ void	print_errors(char **filename, int r)
 		ft_putstr_fd(": Permission denied\n", 2);
 	}
 	else if (errno == ENOENT)
-	{
 		ft_putstr_fd(": No such file or directory\n", 2);
-		*filename = "";
-	}
+	*filename = "";
 }
 
 void	print_usage(char *argv0, char invalid_flag)
