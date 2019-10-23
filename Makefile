@@ -27,6 +27,7 @@ OBJS = $(addsuffix .o, $(FUNCS))
 SRC_PATH = ./
 INCLUDE_PATH = ./
 CFLAGS = -Wall -Wextra -Werror -I$(INCLUDE_PATH)
+OPT = -ofast
 LIBFT = Libft/libft.a
 LIBS = -L./Libft -lft
 RED = "\033[1;31m"
@@ -43,10 +44,10 @@ $(LIBFT):
 	make -C ./Libft/
 
 $(OBJS): %.o: $(SRC_PATH)%.c
-	gcc -c $(CFLAGS) $^ -o $@
+	gcc $(OPT) -c $(CFLAGS) $^ -o $@
 
 $(NAME): $(LIBFT) $(OBJS)
-	gcc $(CFLAGS) $(LIBS) $(OBJS) -o $(NAME)
+	gcc $(OPT) $(CFLAGS) $(LIBS) $(OBJS) -o $(NAME)
 	@echo $(GREEN)">>>Sucess! ft_ls installed"$(NOCOLOR)'\n'
 
 clean:

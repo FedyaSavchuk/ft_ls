@@ -11,13 +11,13 @@
 /* ************************************************************************** */
 
 #include "ft_ls.h"
+#include <stdio.h>
 #include <errno.h>
-
-extern int errno;
 
 void	print_errors(char **filename, int r)
 {
 	char *tmp;
+	extern int errno;
 
 	tmp = *filename;
 	if (g_flags_ls->R && r)
@@ -25,25 +25,23 @@ void	print_errors(char **filename, int r)
 		while (ft_strchr(tmp, '/'))
 			tmp = ft_strchr(tmp, '/') + 1;
 	}
+	ft_putstr_fd("ls: ", 2);
 	if (ft_strlen(tmp) < 1)
 	{
-		ft_putstr_fd("ls: ", 2);
+
 		ft_putstr_fd("fts_open", 2);
 		ft_putstr_fd(": No such file or directory\n", 2);
 		exit(1);
 	}
-	else if (errno == EACCES)
+	ft_putstr_fd(tmp, 2);
+	if (errno == EACCES)
 	{
-		ft_putendl("");
+		printf("\n");
 		print_directory(*filename);
-		ft_putstr_fd("ls: ", 2);
-		ft_putstr_fd(tmp, 2);
 		ft_putstr_fd(": Permission denied\n", 2);
 	}
 	else if (errno == ENOENT)
 	{
-		ft_putstr_fd("ls: ", 2);
-		ft_putstr_fd(tmp, 2);
 		ft_putstr_fd(": No such file or directory\n", 2);
 		*filename = "";
 	}

@@ -17,19 +17,28 @@ static int	check_flags(int argc, char **argv)
 			while (argv[i][j])
 			{
 				if (argv[i][j] == 'l')
+				{
 					g_flags_ls->l = 1;
+					g_flags_ls->one = 0;
+				}
 				else if (argv[i][j] == 'R')
 					g_flags_ls->R = 1;
 				else if (argv[i][j] == 'a')
+				{
 					g_flags_ls->a = 1;
+					g_flags_ls->A = 0;
+				}
 				else if (argv[i][j] == 'r')
 					g_flags_ls->r = 1;
 				else if (argv[i][j] == 't')
 					g_flags_ls->t = 1;
 				else if (argv[i][j] == 'g')
+				{
 					g_flags_ls->g = 1;
+					g_flags_ls->one = 0;
+				}
 				else if (argv[i][j] == 'A') ////
-					g_flags_ls->A = 1;
+					g_flags_ls->A = g_flags_ls->a ? 0 : 1;
 				else if (argv[i][j] == 'S') ////
 					g_flags_ls->S = 1;
 				else if (argv[i][j] == 'f') ////
@@ -39,7 +48,11 @@ static int	check_flags(int argc, char **argv)
 				else if (argv[i][j] == 's')
 					g_flags_ls->s = 1;
 				else if (argv[i][j] == '1' )
+				{
 					g_flags_ls->one = 1;
+					g_flags_ls->g = 0;
+					g_flags_ls->l = 0;
+				}
 				else if (argv[i][j] == '-' && j == 1 && argv[i][j + 1] == '\0')
 					return (i + 1);
 				else

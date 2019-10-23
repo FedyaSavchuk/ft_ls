@@ -14,7 +14,7 @@
 #include "stdio.h"
 #define HALF_YEAR 2629743 * 6
 #define ELDER_BITS 261632
-#define BUF_SIZE 512
+#define BUF_SIZE 1024
 #include <sys/acl.h>
 
 //static long ft_abs(long n)
@@ -85,7 +85,7 @@ static l_file	*add_chmod_files(l_file *files, char *d_name)
 	if (S_ISLNK(file_stat.st_mode))
 	{
 		chmod = ft_strcat(chmod, "l");
-		if (g_flags_ls->l)
+		if (g_flags_ls->l || g_flags_ls->g)
 		{
 			files->file_name = ft_strjoin((files->file_name), " -> ");
 			ft_bzero(s, BUF_SIZE);
@@ -133,7 +133,7 @@ static l_file	*add_chmod(l_file *files, char *d_name, struct dirent *dir)
 	if (dir->d_type == DT_LNK)
 	{
 		chmod = ft_strcat(chmod, "l");
-		if (g_flags_ls->l)
+		if (g_flags_ls->l || g_flags_ls->g)
 		{
 			files->file_name = ft_strjoin(files->file_name, " -> ");
 			ft_bzero(s, BUF_SIZE);
@@ -171,6 +171,34 @@ void add_major_minor(struct stat file_stat, l_file *files)
 	}
 }
 
+void	time_and_xattr(l_file *files, char **d_name)
+{
+	char	*date;
+	int 	k;
+	acl_t 			acl;
+
+	k = 0;
+	date = ctime(&files->unix_time);
+	files->date = ft_strndup(&date[4], 7);
+	if ((unsigned long)difftime(time(NULL), files->unix_time) < HALF_YEAR)
+		files->time = ft_strndup(&date[11], 5);
+	else
+	{
+		date = date + 20;
+		while(*date == ' ')
+			date++;
+		while(*(date + k) != '\n')
+			k++;
+		files->time = ft_strndup(date - 1, k + 1);
+	}
+	if (listxattr(*d_name, NULL, 0, XATTR_NOFOLLOW) > 0)
+		ft_strcat(files->chmod, "@");
+	else if ((acl = acl_get_link_np(*d_name, ACL_TYPE_EXTENDED)))
+	{
+		free(acl);
+		ft_strcat(files->chmod, "+");
+	}
+}
 /*
 ** add_params
 ** --------------
@@ -189,31 +217,32 @@ void add_major_minor(struct stat file_stat, l_file *files)
 l_file	*add_params_f(l_file *files, char **d_name, struct dirent *dir)
 {
 	struct stat		file_stat;
-	char			*date;
-	acl_t 			acl;
+//	char			*date;
+//	acl_t 			acl;
 
 	lstat(*d_name, &file_stat);
 	files->file_name = !files->file_name ? ft_strdup(dir->d_name) : files->file_name;
 	add_chmod(files, *d_name, dir); /////
 	files->unix_time = file_stat.st_mtimespec.tv_sec;
-	date = ctime(&files->unix_time);
-	files->date = ft_strndup(&date[4], 7);
-	files->time = (unsigned long)difftime(time(NULL), files->unix_time) < HALF_YEAR
-			? ft_strndup(&date[11], 5) :  ft_strndup(&date[20], 4);
+	time_and_xattr(files, d_name);
+//	date = ctime(&files->unix_time);
+//	files->date = ft_strndup(&date[4], 7);
+//	files->time = (unsigned long)difftime(time(NULL), files->unix_time) < HALF_YEAR
+//			? ft_strndup(&date[11], 5) :  ft_strndup(&date[20], 4);
 	files->user_name = getpwuid(file_stat.st_uid)->pw_name;
 	files->nlink = file_stat.st_nlink;
 	files->file_size = file_stat.st_size;
 	add_major_minor(file_stat, files);
 	files->st_blocks = file_stat.st_blocks;
 	files->group = getgrgid(file_stat.st_gid)->gr_name;
-	if (listxattr(*d_name, NULL, 0, XATTR_NOFOLLOW) > 0)
-		ft_strcat(files->chmod, "@");
-	else if ((acl = acl_get_link_np(*d_name, ACL_TYPE_EXTENDED)))
-	{
-		free(acl);
-		ft_strcat(files->chmod, "+");
-	}
-	//ft_strdel(d_name);
+//	if (listxattr(*d_name, NULL, 0, XATTR_NOFOLLOW) > 0)
+//		ft_strcat(files->chmod, "@");
+//	else if ((acl = acl_get_link_np(*d_name, ACL_TYPE_EXTENDED)))
+//	{
+//		free(acl);
+//		ft_strcat(files->chmod, "+");
+//	}
+	ft_strdel(dir ? d_name : NULL);
 	return (files);
 }
 

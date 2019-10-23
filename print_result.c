@@ -73,7 +73,7 @@ void	print_l(l_file *struct_el)
 			   struct_el->maj, g_ls_sizes.minor_len,
 			   struct_el->min);
 	printf("%s", struct_el->date);
-	printf("%5.5s ", struct_el->time);
+	printf("%5s ", struct_el->time);
 }
 
 void	print_ls(l_file **struct_array, char *dir_name, int r_flag, int f)
@@ -93,7 +93,8 @@ void	print_ls(l_file **struct_array, char *dir_name, int r_flag, int f)
 		g_ls_sizes.size_len = g_ls_sizes.maj_len + g_ls_sizes.minor_len + 3;
 	if (r_flag)
 		printf("\n%s:\n", dir_name);
-	if (g_flags_ls->l && !f && (struct_array[i + 3] || g_flags_ls->a))
+	if ((g_flags_ls->l || g_flags_ls->g)
+		&& !f && (struct_array[i + 3] || g_flags_ls->a))
 		printf("total %d\n", g_ls_vars.total_blocks);
 	while (struct_array[++i])
 	{
