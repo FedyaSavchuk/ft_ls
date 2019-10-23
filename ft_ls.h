@@ -34,13 +34,11 @@ l_flags *g_flags_ls;
 
 typedef struct	l_file
 {
-				int 			total;			// сумма блоков (fileStat.st_blocks)
 				char			*chmod;			// fileStat.st_mode
 				int				nlink;			// fileStat.st_nlink
 				char			*user_name;		// pwd->pw_name
 				char 			*group;
 				char 			*date;
-				char			*year;			// fileStat.st_mtimespec.tv_sec
 				int 			file_size;		// fileStat.st_size
 				unsigned int	min;
 				unsigned int	maj;
@@ -56,6 +54,17 @@ struct s_ls_vars
 				unsigned int	total_blocks;
 } g_ls_vars;
 
+struct ls_sizes
+{
+	int link_len;
+	int	size_len;
+	int user_len;
+	int block_len;
+	int group_len;
+	int maj_len;
+	int minor_len;
+};
+
 int			complete_list(l_file *files, char *file_name);
 l_file		**sort_by_ascii(l_file **struct_array);		// сортирует файлы и каталоги по ASCII
 void		print_ls(l_file **struct_array, char *dir_name, int r_flag, int f);
@@ -70,6 +79,12 @@ void 		print_directory(char *filename);
 int			sort_args(l_file **dirs, l_file **files, int *size_d, int size_f);
 l_file		*add_params_f(l_file *files, char **d_name, struct dirent *dir);
 int			check_flags(int argc, char **argv);
+int			int_len(int number);
+int			max_len(l_file **struct_array, char column);
+void		add_major_minor(struct stat file_stat, l_file *files);
+void		add_chmod(l_file *files, char *d_name, struct dirent *dir);
+void		add_chmod_files(l_file *files, char *d_name);
+
 
 #endif
 

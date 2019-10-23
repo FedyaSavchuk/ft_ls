@@ -13,12 +13,12 @@
 #include "ft_ls.h"
 #include <errno.h>
 
-void	sort_agrs_ascii(l_file **argv, int size, int f)
+void		sort_agrs_ascii(l_file **argv, int size, int f)
 {
-	int i;
-	int j;
-	int r;
-	char *temp;
+	int		i;
+	int		j;
+	int		r;
+	char	*temp;
 
 	if (size <= 1 || g_flags_ls->f)
 		return ;
@@ -38,7 +38,7 @@ void	sort_agrs_ascii(l_file **argv, int size, int f)
 	}
 }
 
-void	sort_agrs_size(l_file **argv, int size)
+void		sort_agrs_size(l_file **argv, int size)
 {
 	int		i;
 	int		j;
@@ -61,7 +61,7 @@ void	sort_agrs_size(l_file **argv, int size)
 	}
 }
 
-void	sort_agrs_time(l_file **argv, int size)
+void		sort_agrs_time(l_file **argv, int size)
 {
 	int		i;
 	int		j;
@@ -84,19 +84,13 @@ void	sort_agrs_time(l_file **argv, int size)
 	}
 }
 
-int	sort_args(l_file **dirs, l_file **files, int *size_d, int size_f)
+static int	fill_params(l_file **dirs, l_file **files, int *size_d, int size_f)
 {
-	int 		i;
-	int			k;
-	extern int errno;
+	int i;
+	int k;
 
 	i = -1;
 	k = 0;
-	if (!g_flags_ls->f)
-	{
-		sort_agrs_ascii(dirs, *size_d, -1);
-		sort_agrs_ascii(files, size_f, 1);
-	}
 	while (++i < *size_d)
 	{
 		if (!opendir(dirs[i]->file_name) && errno == ENOENT)
@@ -111,6 +105,21 @@ int	sort_args(l_file **dirs, l_file **files, int *size_d, int size_f)
 	i = -1;
 	while (++i < size_f)
 		add_params_f(&(*(files)[i]), &((*(files[i])).file_name), NULL);
+	return (k);
+}
+
+int			sort_args(l_file **dirs, l_file **files, int *size_d, int size_f)
+{
+	int			k;
+	extern int	errno;
+
+	k = 0;
+	if (!g_flags_ls->f)
+	{
+		sort_agrs_ascii(dirs, *size_d, -1);
+		sort_agrs_ascii(files, size_f, 1);
+	}
+	k = fill_params(dirs, files, size_d, size_f);
 	if ((g_flags_ls->t || g_flags_ls->S) && !g_flags_ls->f)
 	{
 		if (g_flags_ls->S)
@@ -124,5 +133,5 @@ int	sort_args(l_file **dirs, l_file **files, int *size_d, int size_f)
 			sort_agrs_time(files, size_f);
 		}
 	}
-	return k;
+	return (k);
 }

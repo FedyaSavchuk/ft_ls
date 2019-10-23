@@ -51,3 +51,8 @@ void	print_usage(char *argv0, char invalid_flag)
 	ft_putendl_fd("usage: ls [-ARSafglmrst1] [file ...]", 2);
 	exit(1);
 }
+
+void	print_directory(char *filename)
+{
+	printf("%s:\n", filename);
+}

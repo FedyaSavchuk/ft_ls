@@ -12,11 +12,12 @@
 
 FUNCS = \
 		complete_list \
-		free_data \
+		complete_list_2 \
+		print_result \
+		additional_funcs \
 		ft_ls \
 		ft_strjoin_safe \
 		ft_strndup \
-		print_result \
 		sort \
 		print_errors \
 		sort_args \
