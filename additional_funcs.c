@@ -14,9 +14,12 @@
 
 void		free_3ptr(DIR **ptr, struct dirent **dir, char **c)
 {
-	free(*ptr);
-	free(*dir);
-	free(*c);
+	if (ptr && *ptr)
+		free(*ptr);
+	if (dir && *dir)
+		free(*dir);
+	if (c && *c)
+		free(*c);
 }
 
 int			int_len(int number)
@@ -71,4 +74,22 @@ int			max_len(l_file **struct_array, char column)
 			search_max_len(struct_array[i], column, &max_len);
 	}
 	return (max_len);
+}
+
+void free_struct(l_file *files)
+{
+	l_file *next_el;
+
+	next_el = files;
+	while (next_el && next_el->next)
+	{
+		files = next_el;
+		free(files->chmod);
+		free(files->time);
+		free(files->date);
+		free(files->file_name);
+		next_el = files->next;
+		free(files);
+	}
+	free(next_el->next);
 }

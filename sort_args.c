@@ -93,7 +93,7 @@ static int	fill_params(l_file **dirs, l_file **files, int *size_d, int size_f)
 	k = 0;
 	while (++i < *size_d)
 	{
-		if (!opendir(dirs[i]->file_name) && errno == ENOENT)
+		if (!safe_opendir(dirs[i]->file_name) && errno == ENOENT)
 		{
 			print_errors(&dirs[i]->file_name, 0);
 			k++;
@@ -113,7 +113,6 @@ int			sort_args(l_file **dirs, l_file **files, int *size_d, int size_f)
 	int			k;
 	extern int	errno;
 
-	k = 0;
 	if (!g_flags_ls->f)
 	{
 		sort_agrs_ascii(dirs, *size_d, -1);

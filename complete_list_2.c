@@ -60,13 +60,17 @@ static void	fill_chmod(int n, char *chmod)
 **	(i.e. "./directory")
 */
 
-static void	add_link_tail(l_file *files, char *d_name)
+static void	add_link_tail(l_file *files, char *d_name, int f)
 {
 	char	s[BUF_SIZE];
+	char	*temp;
 
 	if (g_flags_ls->l || g_flags_ls->g)
 	{
+		temp = files->file_name;
 		files->file_name = ft_strjoin((files->file_name), " -> ");
+		if (f == 0)
+			free(temp);
 		ft_bzero(s, BUF_SIZE);
 		readlink(d_name, s, BUF_SIZE);
 		files->file_name = ft_strjoin_safe(&(files->file_name), s);
@@ -92,7 +96,7 @@ void		add_chmod_files(l_file *files, char *d_name)
 	if (S_ISLNK(file_stat.st_mode))
 	{
 		files->chmod = ft_strcat(files->chmod, "l");
-		add_link_tail(files, d_name);
+		add_link_tail(files, d_name, 1);
 	}
 	else if (S_ISREG(file_stat.st_mode))
 		files->chmod = ft_strcat(files->chmod, "-");
@@ -129,7 +133,7 @@ void		add_chmod(l_file *files, char *d_name, struct dirent *dir)
 	if (dir->d_type == DT_LNK)
 	{
 		files->chmod = ft_strcat(files->chmod, "l");
-		add_link_tail(files, d_name);
+		add_link_tail(files, d_name, 0);
 	}
 	else if (dir->d_type == DT_REG)
 		files->chmod = ft_strcat(files->chmod, "-");

@@ -16,6 +16,27 @@
 #include <sys/acl.h>
 
 /*
+** safe_opendir
+** --------------
+** 	summary: if dir can be opened return 1 and free ptr
+**
+**	d_name: string with filename
+*/
+
+int			safe_opendir(char *d_name)
+{
+	DIR				*ptr;
+
+	ptr = opendir(d_name);
+	if (ptr)
+	{
+		free(ptr);
+		return (1);
+	}
+	return (0);
+}
+
+/*
 ** time_and_xattr
 ** --------------
 ** 	summary: add time (hours:minutes or year) and xattr if file has it
@@ -160,8 +181,10 @@ int			complete_list(l_file *files, char *file_name)
 		new_elem = (l_file *)malloc(sizeof(l_file));
 		files->next = new_elem;
 		files = files->next;
+//		free(dir ? dir : NULL);
 		dir = readdir(ptr);
 	}
+	free(dir);
 	files->next = NULL;
 	add_total(start_list);
 	free_3ptr(&ptr, &dir, &file_name);

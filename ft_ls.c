@@ -20,7 +20,6 @@ static l_file 	**make_array(l_file *files)
 	files = start;
 	while (files)
 	{
-		struct_array[i] = (l_file *)malloc(sizeof(l_file*) * 1);
 		struct_array[i] = files;
 		files = files->next;
 		i++;
@@ -69,7 +68,8 @@ void			ft_ls(char *file_name, int r_flag)
 			ft_strdel(&ptr);
 		}
 	}
-	free(files);
+	free(struct_array);
+	free_struct(files);
 }
 
 int handle_args(l_file **dirs, l_file **files, int *argc, char **argv)
@@ -87,8 +87,8 @@ int handle_args(l_file **dirs, l_file **files, int *argc, char **argv)
 	{
 		if (ft_strlen(argv[i]) < 1)
 			print_errors(&argv[i], 0);
-		if ((!(opendir(argv[i])) && errno == ENOTDIR ) ||
-		((readlink(argv[i], buf, 512)) > 0 && (g_flags_ls->l || !opendir(argv[i]))))
+		if ((!(safe_opendir(argv[i])) && errno == ENOTDIR ) ||
+		((readlink(argv[i], buf, 512)) > 0 && (g_flags_ls->l || !safe_opendir(argv[i]))))
 		{
 			files[size_f] = (l_file *) ft_memalloc(sizeof(l_file));
 			files[size_f++]->file_name = argv[i];
@@ -116,8 +116,7 @@ int 	main(int argc, char **argv)
 	static l_file	*dirs[MAX_LEN] = {NULL};
 	int				j;
 
-	g_flags_ls = (l_flags *)malloc(sizeof(l_flags) * 1);
-	ft_bzero(g_flags_ls, sizeof(l_flags));
+	g_flags_ls = (l_flags *)ft_memalloc(sizeof(l_flags) * 1);
 	j = handle_args(dirs, files, &argc, argv);
 	i = -1;
 	while (++i < j)
@@ -129,6 +128,7 @@ int 	main(int argc, char **argv)
 			if (dirs[i + 1] && dirs[i + 1]->file_name)
 				printf("\n");
 		}
+	free(g_flags_ls);
 	return (errno != 0 ? 1 : 0);
 }
 
