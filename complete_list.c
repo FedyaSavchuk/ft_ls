@@ -15,6 +15,14 @@
 #define HALF_YEAR 2629743 * 6
 #define ELDER_BITS 261632
 #define BUF_SIZE 512
+#include <sys/acl.h>
+
+//static long ft_abs(long n)
+//{
+//	if (n < 0)
+//		return (-n);
+//	return (n);
+//}
 
 /*
 ** fill_chmod
@@ -25,35 +33,6 @@
 **	d_name: name of file or directory
 */
 
-//static void		fill_chmod(int n, char *chmod)
-//{
-//	char	last3bits;
-//	int		bits_move;
-//
-//	bits_move = 6;
-//	while (bits_move >= 0)
-//	{
-//		last3bits = (n >> bits_move) & 7;
-//		if (last3bits == 0)
-//			chmod = ft_strcat(chmod, "---");
-//		else if (last3bits == 1)
-//			chmod = ft_strcat(chmod, "--x");
-//		else if (last3bits == 2)
-//			chmod = ft_strcat(chmod, "-w-");
-//		else if (last3bits == 3)
-//			chmod = ft_strcat(chmod, "-wx");
-//		else if (last3bits == 4)
-//			chmod = ft_strcat(chmod, "r--");
-//		else if (last3bits == 5)
-//			chmod = ft_strcat(chmod, "r-x");
-//		else if (last3bits == 6)
-//			chmod = ft_strcat(chmod, "rw-");
-//		else if (last3bits == 7)
-//			chmod = ft_strcat(chmod, "rwx");
-//		bits_move -= 3;
-//	}
-//}
-
 static void		fill_chmod(int n, char *chmod)
 {
 	char	last3bits;
@@ -63,22 +42,18 @@ static void		fill_chmod(int n, char *chmod)
 	while (bits_move >= 0)
 	{
 		last3bits = (n >> bits_move) & 7;
-		if (last3bits == 0)
-			chmod = ft_strcat(chmod, "---");
-		else if (last3bits == 1)
-			chmod = ft_strcat(chmod, "--x");
-		else if (last3bits == 2)
-			chmod = ft_strcat(chmod, "-w-");
-		else if (last3bits == 3)
-			chmod = ft_strcat(chmod, "-wx");
-		else if (last3bits == 4)
-			chmod = ft_strcat(chmod, "r--");
-		else if (last3bits == 5)
-			chmod = ft_strcat(chmod, "r-x");
-		else if (last3bits == 6)
-			chmod = ft_strcat(chmod, "rw-");
-		else if (last3bits == 7)
-			chmod = ft_strcat(chmod, "rwx");
+		if (last3bits & 4)
+			chmod = ft_strcat(chmod, "r");
+		else
+			chmod = ft_strcat(chmod, "-");
+		if (last3bits & 2)
+			chmod = ft_strcat(chmod, "w");
+		else
+			chmod = ft_strcat(chmod, "-");
+		if (last3bits & 1)
+			chmod = ft_strcat(chmod, "x");
+		else
+			chmod = ft_strcat(chmod, "-");
 		bits_move -= 3;
 	}
 	if(n & S_ISUID)
@@ -87,6 +62,52 @@ static void		fill_chmod(int n, char *chmod)
 		chmod[6] = (chmod[6] == 'x') ? 's' : 'S';
 	if(n & S_ISVTX)
 		chmod[9] = (chmod[9] == 'x') ? 't' : 'T';
+}
+
+/*
+** add_chmod_files
+** --------------
+** 	summary: add chmod params to file structure chmod param, from
+**	fileStat.st_mode
+**
+**	files: address of file (d_name) structure
+**	d_name: name of file or directory
+*/
+
+static l_file	*add_chmod_files(l_file *files, char *d_name)
+{
+	char			*chmod;
+	struct stat		file_stat;
+	char			s[BUF_SIZE];
+
+	lstat(d_name, &file_stat);
+	chmod = ft_strnew(12);
+	if (S_ISLNK(file_stat.st_mode))
+	{
+		chmod = ft_strcat(chmod, "l");
+		if (g_flags_ls->l)
+		{
+			files->file_name = ft_strjoin((files->file_name), " -> ");
+			ft_bzero(s, BUF_SIZE);
+			readlink(d_name, s, BUF_SIZE);
+			files->file_name = ft_strjoin_safe(&(files->file_name), s);
+		}
+	}
+	else if (S_ISREG(file_stat.st_mode))
+		chmod = ft_strcat(chmod, "-");
+	else if (S_ISDIR(file_stat.st_mode))
+		chmod = ft_strcat(chmod, "d");
+	else if (S_ISCHR(file_stat.st_mode))
+		chmod = ft_strcat(chmod, "c");
+	else if (S_ISBLK(file_stat.st_mode))
+		chmod = ft_strcat(chmod, "b");
+	else if (S_ISFIFO(file_stat.st_mode))
+		chmod = ft_strcat(chmod, "p");
+	else if (S_ISSOCK(file_stat.st_mode))
+		chmod = ft_strcat(chmod, "s");
+	fill_chmod(file_stat.st_mode, chmod);
+	files->chmod = chmod;
+	return (files);
 }
 
 /*
@@ -105,6 +126,8 @@ static l_file	*add_chmod(l_file *files, char *d_name, struct dirent *dir)
 	struct stat		file_stat;
 	char			s[BUF_SIZE];
 
+	if (dir == NULL)
+		return add_chmod_files(files, d_name);
 	lstat(d_name, &file_stat);
 	chmod = ft_strnew(12);
 	if (dir->d_type == DT_LNK)
@@ -115,7 +138,7 @@ static l_file	*add_chmod(l_file *files, char *d_name, struct dirent *dir)
 			files->file_name = ft_strjoin(files->file_name, " -> ");
 			ft_bzero(s, BUF_SIZE);
 			readlink(d_name, s, BUF_SIZE);
-			files->file_name = ft_strjoin_safe(files->file_name, s);
+			files->file_name = ft_strjoin_safe(&files->file_name, s);
 		}
 	}
 	else if (dir->d_type == DT_REG)
@@ -130,9 +153,22 @@ static l_file	*add_chmod(l_file *files, char *d_name, struct dirent *dir)
 		chmod = ft_strcat(chmod, "p");
 	else if (dir->d_type == DT_SOCK)
 		chmod = ft_strcat(chmod, "s");
+	else
+		chmod = ft_strcat(chmod, "d");
 	fill_chmod(file_stat.st_mode, chmod);
 	files->chmod = chmod;
 	return (files);
+}
+
+void add_major_minor(struct stat file_stat, l_file *files)
+{
+	if (S_ISCHR(file_stat.st_mode) || S_ISBLK(file_stat.st_mode)) {
+		files->maj = major(file_stat.st_rdev);
+		files->min = minor(file_stat.st_rdev);
+	} else {
+		files->maj = 0U;
+		files->min = 0U;
+	}
 }
 
 /*
@@ -150,25 +186,34 @@ static l_file	*add_chmod(l_file *files, char *d_name, struct dirent *dir)
 **	d_name: name of file or directory
 */
 
-static l_file	*add_params_f(l_file *files, char **d_name, struct dirent *dir)
+l_file	*add_params_f(l_file *files, char **d_name, struct dirent *dir)
 {
 	struct stat		file_stat;
 	char			*date;
+	acl_t 			acl;
 
 	lstat(*d_name, &file_stat);
-	files->file_name = ft_strdup(dir->d_name);
+	files->file_name = !files->file_name ? ft_strdup(dir->d_name) : files->file_name;
 	add_chmod(files, *d_name, dir); /////
 	files->unix_time = file_stat.st_mtimespec.tv_sec;
 	date = ctime(&files->unix_time);
 	files->date = ft_strndup(&date[4], 7);
-	files->time = (long int)difftime(time(NULL), files->unix_time) <= HALF_YEAR
-			? ft_strndup(&date[11], 5) : ft_strndup(&date[20], 4);
+	files->time = (unsigned long)difftime(time(NULL), files->unix_time) < HALF_YEAR
+			? ft_strndup(&date[11], 5) :  ft_strndup(&date[20], 4);
 	files->user_name = getpwuid(file_stat.st_uid)->pw_name;
 	files->nlink = file_stat.st_nlink;
 	files->file_size = file_stat.st_size;
+	add_major_minor(file_stat, files);
 	files->st_blocks = file_stat.st_blocks;
 	files->group = getgrgid(file_stat.st_gid)->gr_name;
-	ft_strdel(d_name);
+	if (listxattr(*d_name, NULL, 0, XATTR_NOFOLLOW) > 0)
+		ft_strcat(files->chmod, "@");
+	else if ((acl = acl_get_link_np(*d_name, ACL_TYPE_EXTENDED)))
+	{
+		free(acl);
+		ft_strcat(files->chmod, "+");
+	}
+	//ft_strdel(d_name);
 	return (files);
 }
 
@@ -234,7 +279,6 @@ int				complete_list(l_file *files, char *file_name)
 	if (!(ptr = opendir(file_name)))
 //		add_params_f(files, &file_name, file_name);
 		return (-1);
-
 	dir = readdir(ptr);
 	while (dir)
 	{

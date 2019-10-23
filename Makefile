@@ -19,14 +19,15 @@ FUNCS = \
 		ft_strndup \
 		print_result \
 		sort \
-		print_errors
+		print_errors \
+		sort_args
 NAME = ft_ls
 SRC = $(addprefix $(SRC_PATH), $(addsuffix .c, $(FUNCS)))
 OBJS = $(addsuffix .o, $(FUNCS))
 SRC_PATH = ./
 INCLUDE_PATH = ./
 CFLAGS = -Wall -Wextra -Werror -I$(INCLUDE_PATH)
-LIBFT = Libft/lidft.a
+LIBFT = Libft/libft.a
 LIBS = -L./Libft -lft
 RED = "\033[1;31m"
 PURPLE = "\033[1;35m"
@@ -39,21 +40,24 @@ compile:
 	@echo $(PURPLE)">>> Compiling..."$(NOCOLOR)
 
 $(LIBFT):
-	make -C ./libft
+	make -C ./Libft/
 
 $(OBJS): %.o: $(SRC_PATH)%.c
-	gcc -c $(CFLAGS) $^
+	gcc -c $(CFLAGS) $^ -o $@
 
-$(NAME): compile $(LIBFT) $(OBJS)
+$(NAME): $(LIBFT) $(OBJS)
 	gcc $(CFLAGS) $(LIBS) $(OBJS) -o $(NAME)
-	@echo $(GREEN)">>> Succes!"$(NOCOLOR)
+	@echo $(GREEN)">>>Sucess! ft_ls installed"$(NOCOLOR)'\n'
+
 clean:
 	@echo $(PURPLE)">>> Deleting object files.."$(NOCOLOR)
 	rm -f $(OBJS)
-	make -C ./libft clean
+	@make -C ./libft clean
+
 fclean: clean
-	@echo $(PURPLE)">>> Deleting fillit..."$(NOCOLOR)
-	rm -f ./libft/$(LIBFT)
+	@echo $(PURPLE)">>> Deleting ft_ls..."$(NOCOLOR)
+	rm -f $(LIBFT)
 	rm -f $(NAME)
-	@echo $(GREEN)">>> fillit deleted"$(NOCOLOR)'\n'
+	@echo $(GREEN)">>> ft_ls deleted"$(NOCOLOR)'\n'
+
 re: fclean all

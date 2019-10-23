@@ -42,8 +42,8 @@ typedef struct	l_file
 				char 			*date;
 				char			*year;			// fileStat.st_mtimespec.tv_sec
 				int 			file_size;		// fileStat.st_size
-				char 			*month;			// fileStat.st_mtimespec.tv_sec
-				char			*day;			// fileStat.st_mtimespec.tv_sec
+				unsigned int	min;
+				unsigned int	maj;
 				char			*time;			// fileStat.st_mtimespec.tv_sec
 				long			unix_time;		// время в формате юникод
 				char			*file_name;		// dir -> d_name
@@ -58,16 +58,17 @@ struct s_ls_vars
 
 int			complete_list(l_file *files, char *file_name);
 l_file		**sort_by_ascii(l_file **struct_array);		// сортирует файлы и каталоги по ASCII
-void		print_ls(l_file **struct_array, char *dir_name, int r_flag);
+void		print_ls(l_file **struct_array, char *dir_name, int r_flag, int f);
 l_file		**sort_by_time(l_file **struct_array);
 l_file		**sort_by_size(l_file **struct_array);
-char		*ft_strjoin_safe(char *str1, const char *str2);
+char 		*ft_strjoin_safe(char **str1, const char *str2);
 void		free_3ptr(DIR **ptr, struct dirent **dir, char **c);
 char		*ft_strndup(const char *str, int n);
-void		print_errors(char **filename);
+void	print_errors(char **filename, int r);
 void		print_usage(char *argv0, char invalid_flag);
 void 		print_directory(char *filename);
-void		sort_agrs(l_file **argv, int size);
+int			sort_args(l_file **dirs, l_file **files, int *size_d, int size_f);
+l_file		*add_params_f(l_file *files, char **d_name, struct dirent *dir);
 
 #endif
 

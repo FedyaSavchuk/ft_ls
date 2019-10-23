@@ -85,61 +85,61 @@ l_file		**sort_by_size(l_file **struct_array)
 	return (struct_array);
 }
 
-void	sort_agrs_by_time(l_file **argv, int size)
-{
-	struct stat	file_stat;
-	int			i;
-	int 		j;
-	int			flag;
-	l_file		*temp;
+//void	sort_agrs_by_time(l_file **argv, int size)
+//{
+//	struct stat	file_stat;
+//	int			i;
+//	int 		j;
+//	int			flag;
+//	l_file		*temp;
+//
+//	i = -1;
+//	while (++i < size)
+//	{
+//		lstat(argv[i]->file_name, &file_stat);
+//		argv[i]->unix_time = file_stat.st_mtimespec.tv_sec;
+//	}
+//	i = -1;
+//	while (++i < size)
+//	{
+//		j = 0;
+//		flag = 0;
+//		while (++j < size)
+//		{
+//			if (argv[j - 1]->unix_time > argv[j]->unix_time)
+//				flag = 1;
+//			temp = argv[j - 1];
+//			argv[j - 1] = argv[j];
+//			argv[j] = temp;
+//		}
+//		if (flag)
+//			i = -1;
+//	}
+//}
 
-	i = -1;
-	while (++i < size)
-	{
-		lstat(argv[i]->file_name, &file_stat);
-		argv[i]->unix_time = file_stat.st_mtimespec.tv_sec;
-	}
-	i = -1;
-	while (++i < size)
-	{
-		j = 0;
-		flag = 0;
-		while (++j < size)
-		{
-			if (argv[j - 1]->unix_time > argv[j]->unix_time)
-				flag = 1;
-			temp = argv[j - 1];
-			argv[j - 1] = argv[j];
-			argv[j] = temp;
-		}
-		if (flag)
-			i = -1;
-	}
-}
-
-void	sort_agrs(l_file **argv, int size)
-{
-	int i;
-	int j;
-	int r;
-	char *temp;
-
-	if (size < 2)
-		return ;
-	r = g_flags_ls->r ? -1 : 1;
-	i = 1;
-	while (i < size)
-	{
-		j = i - 1;
-		temp = argv[i]->file_name;
-		while (j >= 0 && r * ft_strcmp(argv[j]->file_name, temp) < 0)
-		{
-			argv[j + 1]->file_name = argv[j]->file_name;
-			j--;
-		}
-		argv[j + 1]->file_name = temp;
-		i++;
-	}
-	if (g_flags_ls->t)
-		sort_agrs_by_time(argv, size);
-}
+//void	sort_agrs(l_file **argv, int size)
+//{
+//	int i;
+//	int j;
+//	int r;
+//	char *temp;
+//
+//	if (size < 2 || g_flags_ls->f)
+//		return ;
+//	r = g_flags_ls->r ? -1 : 1;
+//	i = 1;
+//	while (i < size)
+//	{
+//		j = i - 1;
+//		temp = argv[i]->file_name;
+//		while (j >= 0 && r * ft_strcmp(argv[j]->file_name, temp) < 0)
+//		{
+//			argv[j + 1]->file_name = argv[j]->file_name;
+//			j--;
+//		}
+//		argv[j + 1]->file_name = temp;
+//		i++;
+//	}
+//	if (g_flags_ls->t)
+//		sort_agrs_by_time(argv, size);
+//}

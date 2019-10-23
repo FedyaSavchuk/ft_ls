@@ -105,9 +105,9 @@ void			ft_ls(char *file_name, int r_flag)
 	i = -1;
 	files = (l_file *)malloc(sizeof(l_file) * 1);
 	if (complete_list(files, file_name) < 0)
-		return print_errors(&file_name);
+		return print_errors(&file_name, r_flag);
 	struct_array = sort_list(files);
-	print_ls(struct_array, file_name, r_flag);
+	print_ls(struct_array, file_name, r_flag, 0);
 	while (struct_array[++i] && g_flags_ls->R)
 	{
 		if (struct_array[i]->chmod[0] =='d' && !(ft_strequ(struct_array[i]->file_name,".") ||
@@ -124,40 +124,84 @@ void			ft_ls(char *file_name, int r_flag)
 	free(files);
 }
 
+int handle_args(l_file **dirs, l_file **files, int *argc, char **argv)
+{
+	int i;
+	extern int	errno;
+	int size_f;
+	int size_d;
+	char buf[512];
+
+	i = check_flags(*argc, argv) - 1;;
+	size_f = 0;
+	size_d = 0;
+	while (++i < *argc)
+	{
+		if (ft_strlen(argv[i]) < 1)
+			print_errors(&argv[i], 0);
+		if ((!(opendir(argv[i])) && errno == ENOTDIR ) ||
+		((readlink(argv[i], buf, 512)) > 0 && (g_flags_ls->l || !opendir(argv[i]))))
+		{
+			files[size_f] = (l_file *) ft_memalloc(sizeof(l_file));
+			files[size_f++]->file_name = argv[i];
+			continue ;
+		}
+		dirs[size_d] = (l_file *)ft_memalloc(sizeof(l_file));
+		dirs[size_d++]->file_name = argv[i];
+	}
+	 i =sort_args(dirs, files, &size_d, size_f);
+	if (size_d == 0 && size_f == 0)
+		ft_ls(".", 0);
+	print_ls(files, NULL, 0, 1);
+	if (g_flags_ls->m && size_f > 0)
+		printf("\n\n");
+	else if (size_d - i > 0 && size_f > 0)
+		printf("\n");
+	*argc = size_f;
+	return size_d;
+}
+
 int 	main(int argc, char **argv)
 {
 	int			i;
-	//static char	*dirs[MAX_LEN] = {NULL};
-	static l_file	*dirs[MAX_LEN];
+	static l_file	*files[MAX_LEN] = {NULL};
+	static l_file	*dirs[MAX_LEN] = {NULL};
 	int			j;
-	extern int	errno;
 
-
-	j = 0;
 	g_flags_ls = (l_flags *)malloc(sizeof(l_flags) * 1);
 	ft_bzero(g_flags_ls, sizeof(l_flags));
-	i = check_flags(argc, argv) - 1;
-	while (++i < argc)
-	{
-		dirs[j] = (l_file *)malloc(sizeof(l_file) * 1);
-		if ((argv[i]))
-			dirs[j++]->file_name = argv[i];
-	}
+//	while (++i < argc)
+//	{
+//		dirs[j] = (l_file *)ft_memalloc(sizeof(l_file) * 1);
+//		if ((opendir(argv[i])))
+//			dirs[j++]->file_name = argv[i];
+//		else if (errno == ENOTDIR)
+//	}
+	j = handle_args(dirs, files, &argc, argv);
 	i = -1;
-	if (j == 0)
-		ft_ls(".", 0);
-	else
-		while (dirs[++i])
-			if (!opendir(dirs[i]->file_name) && errno == ENOENT)
-				print_errors(&dirs[i]->file_name);
-	sort_agrs(dirs, j);
-	while (--j >= 0)
-		if (dirs[j]->file_name[0])
+//	i = -1;
+//	if (j == 0)
+//		ft_ls(".", 0);
+//	else
+//		while (dirs[++i])
+//			if (!opendir(dirs[i]->file_name))
+//			{
+//				if (errno == ENOENT)
+//					print_errors(&dirs[i]->file_name);
+//				else
+//				{
+//					*files = dirs[i];
+//					(*files)++;
+//				}
+//			}
+//	sort_agrs(dirs, j);
+	while (++i < j)
+		if (dirs[i] && dirs[i]->file_name[0])
 		{
-			if (i > 1)
-				print_directory(dirs[j]->file_name);
-			ft_ls(dirs[j]->file_name, 0);
-			if (dirs[j - 1] && opendir(dirs[j - 1]->file_name))
+			if (j + argc > 1)
+				print_directory(dirs[i]->file_name);
+			ft_ls(dirs[i]->file_name, 0);
+			if (dirs[i + 1] && dirs[i + 1]->file_name)
 				printf("\n");
 		}
 	return (errno != 0 ? 1 : 0);

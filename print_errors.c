@@ -15,21 +15,35 @@
 
 extern int errno;
 
-void	print_errors(char **filename)
+void	print_errors(char **filename, int r)
 {
-	if (errno == EACCES)
+	char *tmp;
+
+	tmp = *filename;
+	if (g_flags_ls->R && r)
+	{
+		while (ft_strchr(tmp, '/'))
+			tmp = ft_strchr(tmp, '/') + 1;
+	}
+	if (ft_strlen(tmp) < 1)
+	{
+		ft_putstr_fd("ls: ", 2);
+		ft_putstr_fd("fts_open", 2);
+		ft_putstr_fd(": No such file or directory\n", 2);
+		exit(1);
+	}
+	else if (errno == EACCES)
 	{
 		ft_putendl("");
 		print_directory(*filename);
 		ft_putstr_fd("ls: ", 2);
-		ft_putstr_fd(&(*filename)[2], 2);
+		ft_putstr_fd(tmp, 2);
 		ft_putstr_fd(": Permission denied\n", 2);
 	}
-	if (errno == ENOENT)
+	else if (errno == ENOENT)
 	{
 		ft_putstr_fd("ls: ", 2);
-		*filename = ((*filename)[1] == '/') ? &(*filename)[2] : *filename;
-		ft_putstr_fd(*filename, 2);
+		ft_putstr_fd(tmp, 2);
 		ft_putstr_fd(": No such file or directory\n", 2);
 		*filename = "";
 	}
