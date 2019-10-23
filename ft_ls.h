@@ -1,5 +1,17 @@
-#ifndef LS
-#define LS
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ft_ls.h                                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: aolen <marvin@42.fr>                       +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2019/10/23 19:19:16 by aolen             #+#    #+#             */
+/*   Updated: 2019/10/23 19:19:22 by aolen            ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#ifndef FT_LS
+# define FT_LS
 # include <dirent.h>
 # include <stdio.h>
 # include <sys/stat.h>
@@ -56,13 +68,13 @@ struct s_ls_vars
 
 struct ls_sizes
 {
-	int link_len;
-	int	size_len;
-	int user_len;
-	int block_len;
-	int group_len;
-	int maj_len;
-	int minor_len;
+				int				link_len;
+				int				size_len;
+				int				user_len;
+				int				block_len;
+				int				group_len;
+				int				maj_len;
+				int				minor_len;
 };
 
 int			complete_list(l_file *files, char *file_name);
@@ -87,4 +99,3 @@ void		add_chmod_files(l_file *files, char *d_name);
 
 
 #endif
-
