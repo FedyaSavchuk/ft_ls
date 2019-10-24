@@ -12,14 +12,16 @@
 
 #include "ft_ls.h"
 
-void		free_3ptr(DIR **ptr, struct dirent **dir, char **c)
+void		free_3ptr(DIR **ptr, struct dirent **dir, char **c, char **vptr)
 {
 	if (ptr && *ptr)
-		free(*ptr);
+		closedir(*ptr);
 	if (dir && *dir)
 		free(*dir);
 	if (c && *c)
 		free(*c);
+	if (vptr && *vptr)
+		free(*vptr);
 }
 
 int			int_len(int number)
@@ -76,20 +78,24 @@ int			max_len(l_file **struct_array, char column)
 	return (max_len);
 }
 
-void free_struct(l_file *files)
+void free_struct(l_file **files)
 {
 	l_file *next_el;
+	l_file **start;
 
-	next_el = files;
+	start = files;
+	next_el = *files;
 	while (next_el && next_el->next)
 	{
-		files = next_el;
-		free(files->chmod);
-		free(files->time);
-		free(files->date);
-		free(files->file_name);
-		next_el = files->next;
-		free(files);
+		*files = next_el;
+		free((*files)->chmod);
+		free((*files)->time);
+		free((*files)->date);
+		free((*files)->file_name);
+		next_el = (*files)->next;
+		free(*files);
 	}
 	free(next_el->next);
+	free(next_el);
+//	free(*start);
 }

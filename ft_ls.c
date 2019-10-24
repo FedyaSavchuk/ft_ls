@@ -50,7 +50,7 @@ void			ft_ls(char *file_name, int r_flag)
 	char *ptr;
 
 	i = -1;
-	files = (l_file *)malloc(sizeof(l_file) * 1);
+	files = (l_file *)ft_memalloc(sizeof(l_file));
 	if (complete_list(files, file_name) < 0)
 		return print_errors(&file_name, r_flag);
 	struct_array = sort_list(files);
@@ -63,13 +63,13 @@ void			ft_ls(char *file_name, int r_flag)
 			if (!(g_flags_ls->A || g_flags_ls->a) && struct_array[i]->file_name[0] == '.')
 				continue ;
 			ptr = ft_strjoin(file_name, "/");
-			ptr = ft_strjoin(ptr, struct_array[i]->file_name);
+			ptr = ft_strjoin_safe(&ptr, struct_array[i]->file_name);
 			ft_ls(ptr, 1);
 			ft_strdel(&ptr);
 		}
 	}
 	free(struct_array);
-	free_struct(files);
+	free_struct(&files);
 }
 
 int handle_args(l_file **dirs, l_file **files, int *argc, char **argv)
@@ -116,7 +116,7 @@ int 	main(int argc, char **argv)
 	static l_file	*dirs[MAX_LEN] = {NULL};
 	int				j;
 
-	g_flags_ls = (l_flags *)ft_memalloc(sizeof(l_flags) * 1);
+	g_flags_ls = (l_flags *)ft_memalloc(sizeof(l_flags));
 	j = handle_args(dirs, files, &argc, argv);
 	i = -1;
 	while (++i < j)
@@ -128,6 +128,7 @@ int 	main(int argc, char **argv)
 			if (dirs[i + 1] && dirs[i + 1]->file_name)
 				printf("\n");
 		}
+	printf("%lu", sizeof(*g_flags_ls));
 	free(g_flags_ls);
 	return (errno != 0 ? 1 : 0);
 }

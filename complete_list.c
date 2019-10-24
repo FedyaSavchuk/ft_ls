@@ -30,7 +30,7 @@ int			safe_opendir(char *d_name)
 	ptr = opendir(d_name);
 	if (ptr)
 	{
-		free(ptr);
+		closedir(ptr);
 		return (1);
 	}
 	return (0);
@@ -176,17 +176,14 @@ int			complete_list(l_file *files, char *file_name)
 	while (dir)
 	{
 		temp = ft_strjoin(file_name, dir->d_name);
-		ft_bzero(files, sizeof(l_file));
 		add_params_f(files, &temp, dir);
-		new_elem = (l_file *)malloc(sizeof(l_file));
+		new_elem = (l_file *)ft_memalloc(sizeof(l_file));
 		files->next = new_elem;
 		files = files->next;
-//		free(dir ? dir : NULL);
 		dir = readdir(ptr);
 	}
-	free(dir);
 	files->next = NULL;
 	add_total(start_list);
-	free_3ptr(&ptr, &dir, &file_name);
+	free_3ptr(&ptr, &dir, &file_name, &temp);
 	return (0);
 }
