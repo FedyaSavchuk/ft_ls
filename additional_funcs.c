@@ -37,9 +37,9 @@ int			int_len(int number)
 	return (count);
 }
 
-static void	search_max_len(l_file *struct_el, char column, int *max_len)
+static void	search_max_len(t_file *struct_el, char column, int *max_len)
 {
-	int len;
+	int		len;
 
 	len = 0;
 	if (column == 'l')
@@ -60,7 +60,7 @@ static void	search_max_len(l_file *struct_el, char column, int *max_len)
 		*max_len = len;
 }
 
-int			max_len(l_file **struct_array, char column)
+int			max_len(t_file **struct_array, char column)
 {
 	int		i;
 	int		max_len;
@@ -78,10 +78,10 @@ int			max_len(l_file **struct_array, char column)
 	return (max_len);
 }
 
-void free_struct(l_file **files)
+void		free_struct(t_file **files)
 {
-	l_file *next_el;
-	l_file **start;
+	t_file	*next_el;
+	t_file	**start;
 
 	start = files;
 	next_el = *files;
@@ -97,5 +97,4 @@ void free_struct(l_file **files)
 	}
 	free(next_el->next);
 	free(next_el);
-//	free(*start);
 }

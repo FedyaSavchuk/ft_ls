@@ -23,7 +23,7 @@
 **	d_name: string with filename
 */
 
-int			safe_opendir(char *d_name)
+static int			safe_opendir(char *d_name)
 {
 	DIR				*ptr;
 
@@ -45,7 +45,7 @@ int			safe_opendir(char *d_name)
 **	d_name: pointer to string with filename
 */
 
-static void	time_and_xattr(l_file *files, char **d_name)
+static void	time_and_xattr(t_file *files, char **d_name)
 {
 	char	*date;
 	int		k;
@@ -89,7 +89,7 @@ static void	time_and_xattr(l_file *files, char **d_name)
 **	d_name: name of file or directory
 */
 
-l_file		*add_params_f(l_file *files, char **d_name, struct dirent *dir)
+static t_file		*add_params_f(t_file *files, char **d_name, struct dirent *dir)
 {
 	struct stat		file_stat;
 
@@ -121,22 +121,22 @@ l_file		*add_params_f(l_file *files, char **d_name, struct dirent *dir)
 **	start_list: start address of file list (d_name) structures
 */
 
-static void	add_total(l_file *start_list)
+static void	add_total(t_file *start_list)
 {
 	int		total;
-	l_file	*start;
+	t_file	*start;
 
 	start = start_list;
 	total = 0;
 	while (start_list->next)
 	{
-		if (!(g_flags_ls->a) && !(g_flags_ls->A)
+		if (!(g_flags_ls->a) && !(g_flags_ls->a_cap)
 			&& start_list->file_name[0] == '.')
 		{
 			start_list = start_list->next;
 			continue ;
 		}
-		if ((g_flags_ls->A) && start_list->chmod[0] == 'd' &&
+		if ((g_flags_ls->a_cap) && start_list->chmod[0] == 'd' &&
 			(ft_strequ(start_list->file_name, ".") ||
 			ft_strequ(start_list->file_name, "..")))
 		{
@@ -160,12 +160,12 @@ static void	add_total(l_file *start_list)
 **	file_name: name of directory that will be opened
 */
 
-int			complete_list(l_file *files, char *file_name)
+int			complete_list(t_file *files, char *file_name)
 {
 	DIR				*ptr;
 	struct dirent	*dir;
-	l_file			*start_list;
-	l_file			*new_elem;
+	t_file			*start_list;
+	t_file			*new_elem;
 	char			*temp;
 
 	file_name = ft_strjoin(file_name, "/");
@@ -177,7 +177,7 @@ int			complete_list(l_file *files, char *file_name)
 	{
 		temp = ft_strjoin(file_name, dir->d_name);
 		add_params_f(files, &temp, dir);
-		new_elem = (l_file *)ft_memalloc(sizeof(l_file));
+		new_elem = (t_file *)ft_memalloc(sizeof(t_file));
 		files->next = new_elem;
 		files = files->next;
 		dir = readdir(ptr);

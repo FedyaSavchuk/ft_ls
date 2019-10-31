@@ -13,7 +13,7 @@
 #include "ft_ls.h"
 #include <errno.h>
 
-void		sort_agrs_ascii(l_file **argv, int size, int f)
+void		sort_agrs_ascii(t_file **argv, int size, int f)
 {
 	int		i;
 	int		j;
@@ -38,12 +38,12 @@ void		sort_agrs_ascii(l_file **argv, int size, int f)
 	}
 }
 
-void		sort_agrs_size(l_file **argv, int size)
+void		sort_agrs_size(t_file **argv, int size)
 {
 	int		i;
 	int		j;
 	int		r;
-	l_file	*temp;
+	t_file	*temp;
 
 	r = g_flags_ls->r ? -1 : 1;
 	i = 1;
@@ -61,12 +61,12 @@ void		sort_agrs_size(l_file **argv, int size)
 	}
 }
 
-void		sort_agrs_time(l_file **argv, int size)
+void		sort_agrs_time(t_file **argv, int size)
 {
 	int		i;
 	int		j;
 	int		r;
-	l_file	*temp;
+	t_file	*temp;
 
 	r = g_flags_ls->r ? -1 : 1;
 	i = 1;
@@ -84,7 +84,7 @@ void		sort_agrs_time(l_file **argv, int size)
 	}
 }
 
-static int	fill_params(l_file **dirs, l_file **files, int *size_d, int size_f)
+static int	fill_params(t_file **dirs, t_file **files, int *size_d, int size_f)
 {
 	int i;
 	int k;
@@ -108,7 +108,7 @@ static int	fill_params(l_file **dirs, l_file **files, int *size_d, int size_f)
 	return (k);
 }
 
-int			sort_args(l_file **dirs, l_file **files, int *size_d, int size_f)
+int			sort_args(t_file **dirs, t_file **files, int *size_d, int size_f)
 {
 	int			k;
 	extern int	errno;
@@ -119,9 +119,9 @@ int			sort_args(l_file **dirs, l_file **files, int *size_d, int size_f)
 		sort_agrs_ascii(files, size_f, 1);
 	}
 	k = fill_params(dirs, files, size_d, size_f);
-	if ((g_flags_ls->t || g_flags_ls->S) && !g_flags_ls->f)
+	if ((g_flags_ls->t || g_flags_ls->s_cap) && !g_flags_ls->f)
 	{
-		if (g_flags_ls->S)
+		if (g_flags_ls->s_cap)
 		{
 			sort_agrs_size(dirs, *size_d);
 			sort_agrs_size(files, size_f);

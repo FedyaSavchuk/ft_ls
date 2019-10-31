@@ -60,7 +60,7 @@ static void	fill_chmod(int n, char *chmod)
 **	(i.e. "./directory")
 */
 
-static void	add_link_tail(l_file *files, char *d_name, int f)
+static void	add_link_tail(t_file *files, char *d_name, int f)
 {
 	char	s[BUF_SIZE];
 	char	*temp;
@@ -87,7 +87,7 @@ static void	add_link_tail(l_file *files, char *d_name, int f)
 **	d_name: name of file or directory
 */
 
-void		add_chmod_files(l_file *files, char *d_name)
+void		add_chmod_files(t_file *files, char *d_name)
 {
 	struct stat		file_stat;
 
@@ -124,7 +124,7 @@ void		add_chmod_files(l_file *files, char *d_name)
 **	dir: dirent struct of current directory
 */
 
-void		add_chmod(l_file *files, char *d_name, struct dirent *dir)
+void		add_chmod(t_file *files, char *d_name, struct dirent *dir)
 {
 	struct stat		file_stat;
 
@@ -162,7 +162,7 @@ void		add_chmod(l_file *files, char *d_name, struct dirent *dir)
 **	files: address of file (d_name) structure
 */
 
-void		add_major_minor(struct stat file_stat, l_file *files)
+void		add_major_minor(struct stat file_stat, t_file *files)
 {
 	if (S_ISCHR(file_stat.st_mode) || S_ISBLK(file_stat.st_mode))
 	{

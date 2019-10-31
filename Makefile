@@ -29,8 +29,8 @@ SRC_PATH = ./
 INCLUDE_PATH = ./
 CFLAGS = -g -Wall -Wextra -Werror -I$(INCLUDE_PATH)
 OPT = -ofast
-LIBFT = Libft/libft.a
-LIBS = -L./Libft -lft
+LIBFT = ft_printf/libftprintf.a
+LIBS = -L./ft_printf -lftprintf
 RED = "\033[1;31m"
 PURPLE = "\033[1;35m"
 GREEN = "\033[1;32m"
@@ -42,7 +42,7 @@ compile:
 	@echo $(PURPLE)">>> Compiling..."$(NOCOLOR)
 
 $(LIBFT):
-	make -C ./Libft/
+	make -C ./ft_printf
 
 $(OBJS): %.o: $(SRC_PATH)%.c
 	gcc $(OPT) -c $(CFLAGS) $^ -o $@
@@ -54,7 +54,7 @@ $(NAME): $(LIBFT) $(OBJS)
 clean:
 	@echo $(PURPLE)">>> Deleting object files.."$(NOCOLOR)
 	rm -f $(OBJS)
-	@make -C ./libft clean
+	@make -C ./ft_printf clean
 
 fclean: clean
 	@echo $(PURPLE)">>> Deleting ft_ls..."$(NOCOLOR)

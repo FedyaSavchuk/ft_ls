@@ -44,26 +44,26 @@ static int	collect_flags(char flag)
 		g_flags_ls->one = 0;
 	}
 	else if (flag == 'R')
-		g_flags_ls->R = 1;
+		g_flags_ls->r_cap = 1;
 	else if (flag == 'a')
 	{
 		g_flags_ls->a = 1;
-		g_flags_ls->A = 0;
+		g_flags_ls->a_cap = 0;
 	}
 	else if (flag == 'r')
 		g_flags_ls->r = 1;
 	else if (flag == 't')
 		g_flags_ls->t = 1;
 	else if (flag == 'A')
-		g_flags_ls->A = g_flags_ls->a ? 0 : 1;
+		g_flags_ls->a_cap = g_flags_ls->a ? 0 : 1;
 	else if (flag == 'S')
-		g_flags_ls->S = 1;
+		g_flags_ls->s_cap = 1;
 	else
 		return (collect_flags_2(flag));
 	return (1);
 }
 
-int			check_flags(int argc, char **argv)
+int			check_flags_ls(int argc, char **argv)
 {
 	int i;
 	int j;

@@ -12,12 +12,35 @@
 
 #include "ft_ls.h"
 
-l_file		**sort_by_ascii(l_file **struct_array)
+int				check_args(char **argv, int i, t_file **dirs, t_file **files)
 {
-	int		i;
-	int		j;
-	int		r;
-	l_file	*temp;
+	extern int	errno;
+	char		buf[512];
+	int			sizes[3];
+
+	sizes[0] = 0;
+	sizes[1] = 0;
+	if (ft_strlen(argv[i]) < 1)
+		print_errors(&argv[i], 0);
+	if ((!(safe_opendir(argv[i])) && errno == ENOTDIR) ||
+		((readlink(argv[i], buf, 512)) > 0 &&
+		(g_flags_ls->l || !safe_opendir(argv[i]))))
+	{
+		*files = (t_file *)ft_memalloc(sizeof(t_file));
+		(*files)->file_name = argv[i];
+		return (1);
+	}
+	*dirs = (t_file *)ft_memalloc(sizeof(t_file));
+	(*dirs)->file_name = argv[i];
+	return (2);
+}
+
+t_file			**sort_by_ascii(t_file **struct_array)
+{
+	int			i;
+	int			j;
+	int			r;
+	t_file		*temp;
 
 	r = g_flags_ls->r ? -1 : 1;
 	i = 1;
@@ -37,12 +60,12 @@ l_file		**sort_by_ascii(l_file **struct_array)
 	return (struct_array);
 }
 
-l_file		**sort_by_time(l_file **struct_array)
+t_file			**sort_by_time(t_file **struct_array)
 {
-	int		i;
-	int		j;
-	int		r;
-	l_file	*temp;
+	int			i;
+	int			j;
+	int			r;
+	t_file		*temp;
 
 	r = g_flags_ls->r ? -1 : 1;
 	i = 1;
@@ -61,12 +84,12 @@ l_file		**sort_by_time(l_file **struct_array)
 	return (struct_array);
 }
 
-l_file		**sort_by_size(l_file **struct_array)
+t_file			**sort_by_size(t_file **struct_array)
 {
-	int		i;
-	int		j;
-	int		r;
-	l_file	*temp;
+	int			i;
+	int			j;
+	int			r;
+	t_file		*temp;
 
 	r = g_flags_ls->r ? -1 : 1;
 	i = 1;
