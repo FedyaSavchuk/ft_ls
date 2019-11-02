@@ -23,7 +23,7 @@
 **	d_name: string with filename
 */
 
-static int			safe_opendir(char *d_name)
+int			safe_opendir(char *d_name)
 {
 	DIR				*ptr;
 
@@ -89,7 +89,7 @@ static void	time_and_xattr(t_file *files, char **d_name)
 **	d_name: name of file or directory
 */
 
-static t_file		*add_params_f(t_file *files, char **d_name, struct dirent *dir)
+t_file		*add_params_f(t_file *files, char **d_name, struct dirent *dir)
 {
 	struct stat		file_stat;
 
