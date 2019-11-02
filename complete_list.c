@@ -54,7 +54,7 @@ static void	time_and_xattr(t_file *files, char **d_name)
 	k = 0;
 	date = ctime(&files->unix_time);
 	files->date = ft_strndup(&date[4], 7);
-	if ((unsigned long)difftime(time(NULL), files->unix_time) < HALF_YEAR)
+	if ((unsigned long)(time(NULL) - files->unix_time) < HALF_YEAR)
 		files->time = ft_strndup(&date[11], 5);
 	else
 	{

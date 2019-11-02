@@ -81,7 +81,7 @@ void			ft_ls(char *file_name, int r_flag, int k)
 	free_struct(&files);
 }
 
-static int				handle_args(t_file **dirs, t_file **files,
+static int		handle_args(t_file **dirs, t_file **files,
 				int *argc, char **argv)
 {
 	int			i;
